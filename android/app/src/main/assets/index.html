@@ -1,0 +1,1873 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Winogradsky Institute</title>
+  <!-- Google Fonts for Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@1,500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Leaflet CSS for Map Quest -->
+  <link rel="stylesheet" href="lib/leaflet.css" />
+  <link rel="stylesheet" href="lib/leaflet-routing-machine.css" />
+</head>
+<body>
+  <!-- Offline Connection Status Pill / Banner -->
+  <div id="offline-status-banner" class="offline-status-banner" style="display: none;">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="1" y1="1" x2="23" y2="23"></line>
+      <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+      <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+      <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+      <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+      <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+      <line x1="12" y1="20" x2="12.01" y2="20"></line>
+    </svg>
+    <span id="offline-status-text">Немає з'єднання</span>
+  </div>
+
+  <!-- Desktop Presentation Wrapper (Mock Smartphone Device) -->
+  <div class="device-container">
+    <div class="phone-shell">
+      <div class="phone-speaker"></div>
+      <div class="phone-camera"></div>
+      
+      <!-- Actual App Screen viewport -->
+      <div class="app-viewport">
+        
+        <!-- Auth Screen (Login / Register) -->
+        <div id="auth-screen" class="app-screen">
+          <div class="auth-container">
+            <div class="auth-branding">
+              <img src="assets/logo.png" alt="Winogradsky Institute" class="brand-logo-img">
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active">
+              <h3 class="auth-form-title">Вхід в акаунт</h3>
+              <p class="auth-form-desc">Введіть ваші дані для входу у систему</p>
+              
+              <div class="form-group">
+                <label for="login-email">Електронна пошта</label>
+                <input type="email" id="login-email" placeholder="email@winogradsky.edu.ua" required>
+              </div>
+
+              <div class="form-group">
+                <label for="login-password">Пароль</label>
+                <input type="password" id="login-password" placeholder="••••••••" required>
+              </div>
+
+              <div class="auth-error" id="login-error-msg"></div>
+
+              <button type="submit" class="auth-submit-btn" id="login-submit-btn">
+                <span class="btn-text">Увійти</span>
+                <span class="btn-spinner hidden"></span>
+              </button>
+
+              <p class="auth-switch-text">
+                Немає акаунту? <button type="button" class="auth-switch-link" id="switch-to-register">Зареєструватися</button>
+              </p>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form">
+              <h3 class="auth-form-title">Реєстрація</h3>
+              <p class="auth-form-desc">Створіть свій профіль в інституті</p>
+
+              <div class="form-group">
+                <label for="register-name">Повне ім'я</label>
+                <input type="text" id="register-name" placeholder="Олександр Шевченко" required>
+              </div>
+              
+              <div class="form-group">
+                <label for="register-email">Електронна пошта</label>
+                <input type="email" id="register-email" placeholder="email@winogradsky.edu.ua" required>
+              </div>
+
+              <div class="form-group">
+                <label for="register-password">Пароль</label>
+                <input type="password" id="register-password" placeholder="••••••••" required>
+              </div>
+
+              <div class="auth-error" id="register-error-msg"></div>
+
+              <button type="submit" class="auth-submit-btn" id="register-submit-btn">
+                <span class="btn-text">Зареєструватися</span>
+                <span class="btn-spinner hidden"></span>
+              </button>
+
+              <p class="auth-switch-text">
+                Вже маєте акаунт? <button type="button" class="auth-switch-link" id="switch-to-login">Увійти</button>
+              </p>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Main Dashboard Screen -->
+        <div id="home-screen" class="app-screen active">
+          
+          <!-- Top Sticky Header -->
+          <header class="app-header">
+            <button class="profile-btn" id="open-profile-btn" aria-label="Профіль">
+              <div class="avatar-img-placeholder" id="header-avatar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+            </button>
+            
+            <div class="coin-pill" id="open-wallet-btn">
+              <span class="coin-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="12" cy="12" r="10" fill="#4a6b3e"/>
+                  <text x="50%" y="65%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="10" font-weight="bold">Wi</text>
+                </svg>
+              </span>
+              <span class="coin-label">WinCoin</span>
+              <span class="coin-value" id="header-coin-count">0</span>
+            </div>
+          </header>
+
+          <!-- Branding Logo Section -->
+          <div class="branding-container">
+            <img src="assets/logo.png" alt="Winogradsky Institute" class="brand-logo-img">
+          </div>
+
+          <!-- Main Quick Navigation Grid (6 Cards) -->
+          <main class="navigation-grid">
+            <!-- Card 1: Квести -->
+            <button class="grid-card color-dark-green" data-target="quests-screen">
+              <div class="card-header">
+                <div class="card-icon-circle">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="6"></circle>
+                    <circle cx="12" cy="12" r="2"></circle>
+                    <line x1="12" y1="2" x2="12" y2="4"></line>
+                    <line x1="12" y1="20" x2="12" y2="22"></line>
+                    <line x1="2" y1="12" x2="4" y2="12"></line>
+                    <line x1="20" y1="12" x2="22" y2="12"></line>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span class="card-title">Квести</span>
+                <span class="card-arrow">&rsaquo;</span>
+              </div>
+            </button>
+
+            <!-- Card 2: Події -->
+            <button class="grid-card color-medium-green" data-target="events-screen">
+              <div class="card-header">
+                <div class="card-icon-circle">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span class="card-title">Події</span>
+                <span class="card-arrow">&rsaquo;</span>
+              </div>
+            </button>
+
+            <!-- Card 3: Навчання -->
+            <button class="grid-card color-light-medium-green" data-target="education-screen">
+              <div class="card-header">
+                <div class="card-icon-circle">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span class="card-title">Навчання</span>
+                <span class="card-arrow">&rsaquo;</span>
+              </div>
+            </button>
+
+            <!-- Card 4: Винагороди -->
+            <button class="grid-card color-dark-green" data-target="community-screen">
+              <div class="card-header">
+                <div class="card-icon-circle">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="6"></circle>
+                    <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span class="card-title">Винагороди</span>
+                <span class="card-arrow">&rsaquo;</span>
+              </div>
+            </button>
+
+            <!-- Card 5: Новини -->
+            <button class="grid-card color-sage-green" data-target="news-tab-screen">
+              <div class="card-header">
+                <div class="card-icon-circle">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10 9 9 9 8 9"></polyline>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span class="card-title">Новини</span>
+                <span class="card-arrow">&rsaquo;</span>
+              </div>
+            </button>
+
+            <!-- Card 6: Підтримка -->
+            <button class="grid-card color-light-grey-green" data-target="support-screen">
+              <div class="card-header">
+                <div class="card-icon-circle">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                </div>
+              </div>
+              <div class="card-footer">
+                <span class="card-title">Підтримка</span>
+                <span class="card-arrow">&rsaquo;</span>
+              </div>
+            </button>
+          </main>
+
+          <!-- News Feed Section (Стрічка новин) -->
+          <section class="news-feed-section">
+            <div class="section-header">
+              <h2 class="section-title">Стрічка новин</h2>
+              <button class="view-all-btn" id="news-feed-view-all">
+                Переглянути всі <span class="view-all-arrow">&rsaquo;</span>
+              </button>
+            </div>
+
+            <div class="news-list">
+              <!-- Dynamically populated from database -->
+            </div>
+          </section>
+        </div> <!-- Closes home-screen -->
+
+        <!-- Quest Sub-Screen -->
+        <div id="quests-screen" class="app-screen sub-screen">
+          <div class="screen-navbar">
+            <button class="back-btn">&lsaquo;</button>
+            <h2 class="navbar-title">Квести</h2>
+            <div class="placeholder-nav-btn"></div>
+          </div>
+          <div class="screen-content scrollable">
+            <div class="quests-hero">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="hero-icon">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+              </svg>
+              <h3>Виконуйте завдання та заробляйте WinCoins</h3>
+              <p>Отримані монети можна буде обміняти на призи та привілеї інституту.</p>
+            </div>
+            
+            <div class="quest-list">
+              <div class="quest-item" id="quest-kyiv-vinogradsky">
+                <div class="quest-details">
+                  <h4>Київ. Місцями Виноградського</h4>
+                  <p>Пройдіть інтерактивний маршрут місцями Києва, пов'язаними з життям та діяльністю С. М. Виноградського.</p>
+                  <div class="quest-meta-row" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px;">
+                    <span class="quest-reward">+10 WinCoins</span>
+                    <span id="quest-progress-badge" class="quest-status-badge" style="display: none;"></span>
+                  </div>
+                </div>
+                <div class="quest-action-col" style="display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0;">
+                  <button class="quest-action-btn" data-quest-id="kyiv-vinogradsky" data-reward="10">Виконати</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Quest Screen -->
+        <div id="active-quest-screen" class="app-screen sub-screen">
+          <div class="screen-navbar">
+            <button class="back-btn-quest" id="quest-back-btn" style="background: none; border: none; font-size: 28px; color: #1e3d2f; cursor: pointer; padding: 0 8px;">&lsaquo;</button>
+            <h2 class="navbar-title" id="quest-navbar-title">Маршрут до Точки 1</h2>
+            <div class="placeholder-nav-btn"></div>
+          </div>
+          
+          <div class="screen-content scrollable" style="position: relative; height: calc(100% - 60px); padding: 0;">
+            <!-- Quest welcome modal -->
+            <div id="quest-welcome-modal" class="quest-welcome-modal">
+              <div class="quest-welcome-card">
+                <div class="quest-welcome-icon">🎧</div>
+                <h3 class="quest-welcome-title">Київ. Місцями Виноградського</h3>
+                <p class="quest-welcome-text">
+                  Вітаємо у квесті «Київ. Місцями Виноградського»! Рекомендуємо скористатися навушниками або динаміком телефону для прослуховування цікавих історичних фактів під час прогулянки між точками, де жив та бував видатний вчений Сергій Виноградський.
+                </p>
+                <button id="quest-start-btn" class="quest-welcome-btn">ОК, розпочати квест</button>
+              </div>
+            </div>
+
+            <!-- Active Quest Content (Hidden until welcome modal is accepted) -->
+            <div id="quest-active-content" style="padding: 16px; display: none; height: 100%; box-sizing: border-box;">
+              
+              <!-- STAGE 1: Navigation & Map View -->
+              <div id="quest-navigation-view">
+                <!-- Navigation Instruction Card -->
+                <div class="quest-navigation-card" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="background: #1e3d2f; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">1</span>
+                    <h4 style="font-size: 15px; font-weight: 600; color: #1e3d2f; margin: 0; font-family: 'Outfit', sans-serif;">Точка 1: Велика Житомирська, 8/14</h4>
+                  </div>
+                  <p style="font-size: 13px; color: #666; margin: 0 0 12px 32px; font-family: 'Outfit', sans-serif;">Прямуйте до будинку, де жив Сергій Виноградський.</p>
+                  
+                  <!-- Audio Guide Player -->
+                  <div class="audio-guide-player" style="background: #f7f9f6; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e5ece2;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <span id="audio-title-status" style="font-size: 12px; font-weight: 600; color: #1e3d2f; font-family: 'Outfit', sans-serif;">Прослухати гід під час руху до точки</span>
+                      <span id="audio-time" style="font-size: 11px; color: #666; font-family: 'Outfit', sans-serif;">0:00 / 0:00</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <!-- Play/Pause Button -->
+                      <button id="audio-play-btn" style="background: #1e3d2f; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex-shrink: 0;">
+                        <!-- Play SVG -->
+                        <svg id="play-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <!-- Pause SVG -->
+                        <svg id="pause-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      </button>
+                      
+                      <!-- Progress Bar -->
+                      <div style="flex: 1; display: flex; align-items: center; position: relative;">
+                        <input id="audio-progress" type="range" min="0" max="100" value="0" style="width: 100%; accent-color: #1e3d2f; cursor: pointer; margin: 0; height: 4px;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Map Container with floating Start Navigation Button -->
+                <div style="position: relative; height: 260px; margin-bottom: 16px;">
+                  <div id="quest-map" style="height: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5ece2; position: relative; z-index: 1;"></div>
+                  <button id="nav-start-btn" style="position: absolute; bottom: 16px; right: 16px; background: #1e3d2f; color: white; border: none; padding: 12px 20px; border-radius: 24px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Старт</span>
+                  </button>
+                </div>
+
+                <!-- Prominent 'Вже на місці' Button below map -->
+                <button id="quest-arrived-btn" class="quest-arrived-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>Вже на місці</span>
+                </button>
+              </div>
+
+              <!-- STAGE 2: Task View (Split Camera & Historical Photo Alignment) -->
+              <div id="quest-task-view" style="display: none;">
+                <div class="quest-task-badge">
+                  <span>Точка 1 &bull; Завдання</span>
+                </div>
+
+                <div class="quest-story-card">
+                  <p class="quest-story-text">
+                    У дитинстві Сергій Виноградський любив спостерігати з вікон родинного будинку за пожежною станцією, що розташовувалася навпроти. Рух пожежників, виїзди команд і щоденне життя станції привертали увагу майбутнього вченого та були частиною його дитячих спогадів про Київ.
+                  </p>
+                  <div class="quest-instruction-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a6b3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Співставте шматок старого фото з сучасною версією.</span>
+                  </div>
+                </div>
+
+                <!-- Split Camera & Vintage Photo Viewfinder Box -->
+                <div class="split-viewfinder-container" id="split-viewfinder-container">
+                  <!-- Left Half: Camera Live Stream -->
+                  <div class="split-half split-left" id="split-camera-box">
+                    <video id="camera-stream" autoplay playsinline muted></video>
+                    <div id="camera-loading-overlay" class="camera-loading-overlay">
+                      <div class="loading-spinner-small"></div>
+                      <span>Підключення камери...</span>
+                    </div>
+                    <div class="split-label split-label-left">Зараз</div>
+                  </div>
+
+                  <!-- Center Split Line & Guide Mark -->
+                  <div class="split-divider">
+                    <div class="divider-line"></div>
+                    <div class="divider-handle">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="8 12 14 6 14 18"></polygon>
+                        <polygon points="16 12 10 6 10 18" style="transform: scaleX(-1); transform-origin: 50% 50%;"></polygon>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <!-- Right Half: Historical Fire Station Photo -->
+                  <div class="split-half split-right" id="split-vintage-box">
+                    <img id="vintage-guide-img" src="assets/vega.jpg" alt="Стара пожежна станція">
+                    <div class="split-label split-label-right">Історія</div>
+                  </div>
+
+                  <!-- Alignment Grid Guideline Overlay -->
+                  <div class="viewfinder-grid-overlay"></div>
+                </div>
+
+                <!-- Capture Button with Camera Flash effect trigger -->
+                <div class="shutter-action-bar">
+                  <button id="capture-quest-photo-btn" class="camera-shutter-btn">
+                    <div class="shutter-inner-ring">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                      </svg>
+                    </div>
+                    <span>Сфотографувати</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STAGE 3: Photo Result & Review View -->
+              <div id="quest-result-view" style="display: none;">
+                <div class="result-success-badge">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  <span>Фото збережено в галерею!</span>
+                </div>
+
+                <div class="merged-preview-card">
+                  <img id="merged-result-img" alt="Суміщене фото завдання">
+                  <div class="merged-preview-caption">
+                    <span>Суміщений знімок: минуле та сьогодення</span>
+                  </div>
+                </div>
+
+                <div class="result-actions-container">
+                  <div class="result-btn-row">
+                    <button id="retake-photo-btn" class="action-btn-secondary">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                      </svg>
+                      <span>Перезняти</span>
+                    </button>
+                    <button id="fullscreen-view-btn" class="action-btn-secondary">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <polyline points="9 21 3 21 3 15"></polyline>
+                        <line x1="21" y1="3" x2="14" y2="10"></line>
+                        <line x1="3" y1="21" x2="10" y2="14"></line>
+                      </svg>
+                      <span>Переглянути</span>
+                    </button>
+                  </div>
+
+                  <button id="proceed-point2-btn" class="action-btn-primary">
+                    <span>Перейти до Точки 2</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STAGE 4: Point 2 Navigation & Map View -->
+              <div id="quest-point2-view" style="display: none;">
+                <!-- Navigation Instruction Card for Point 2 -->
+                <div class="quest-navigation-card" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="background: #1e3d2f; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">2</span>
+                    <h4 style="font-size: 15px; font-weight: 600; color: #1e3d2f; margin: 0; font-family: 'Outfit', sans-serif;">Точка 2: Володимирська 24</h4>
+                  </div>
+                  <p style="font-size: 13px; color: #666; margin: 0 0 12px 32px; font-family: 'Outfit', sans-serif;">Прямуйте до дзвінниці Софійського собору.</p>
+                  
+                  <!-- Audio Guide Player for Point 2 -->
+                  <div class="audio-guide-player" style="background: #f7f9f6; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e5ece2;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <span id="audio2-title-status" style="font-size: 12px; font-weight: 600; color: #1e3d2f; font-family: 'Outfit', sans-serif;">Прослухати гід під час руху до точки</span>
+                      <span id="audio2-time" style="font-size: 11px; color: #666; font-family: 'Outfit', sans-serif;">0:00 / 0:00</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <!-- Play/Pause Button -->
+                      <button id="audio2-play-btn" style="background: #1e3d2f; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex-shrink: 0;">
+                        <!-- Play SVG -->
+                        <svg id="play2-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <!-- Pause SVG -->
+                        <svg id="pause2-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      </button>
+                      
+                      <!-- Progress Bar -->
+                      <div style="flex: 1; display: flex; align-items: center; position: relative;">
+                        <input id="audio2-progress" type="range" min="0" max="100" value="0" style="width: 100%; accent-color: #1e3d2f; cursor: pointer; margin: 0; height: 4px;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Map Container for Point 2 with floating Start Navigation Button -->
+                <div style="position: relative; height: 260px; margin-bottom: 16px;">
+                  <div id="quest-map-2" style="height: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5ece2; position: relative; z-index: 1;"></div>
+                  <button id="nav2-start-btn" style="position: absolute; bottom: 16px; right: 16px; background: #1e3d2f; color: white; border: none; padding: 12px 20px; border-radius: 24px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Старт</span>
+                  </button>
+                </div>
+
+                <!-- Prominent 'Вже на місці' Button below map -->
+                <button id="quest-arrived-btn-2" class="quest-arrived-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>Вже на місці</span>
+                </button>
+              </div>
+
+              <!-- STAGE 5: Point 2 Task View (Stucco Moldings Detection with Camera Zoom & Transparent PNG Overlay) -->
+              <div id="quest-point2-task-view" style="display: none;">
+                <div class="quest-task-badge">
+                  <span>Точка 2 &bull; Завдання</span>
+                </div>
+
+                <div class="quest-story-card">
+                  <p class="quest-story-text">
+                    Софія Київська — одна з найдавніших святинь столиці, над якою височіє велична Софійська дзвіниця — справжня перлина українського бароко. Її білосніжні яруси прикрашає вишукана ліпнина: рослинні орнаменти, витончені завитки та декоративні деталі, що надають монументальній споруді дивовижної легкості. Підніміть погляд угору — серед цієї краси легко уявити Київ минулих століть, коли дзвони Софії розносилися далеко за межі старого міста.
+                  </p>
+                  <div class="quest-instruction-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a6b3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Знайдіть по нарисам елементи ліпнини на дзвінниці використовуючи збільшення камери телефону.</span>
+                  </div>
+                </div>
+
+                <!-- Vertical Camera Viewfinder with Transparent PNG Overlay -->
+                <div class="camera-vertical-viewfinder" id="stage2-camera-container">
+                  <div class="stage2-video-wrapper">
+                    <video id="stage2-camera-stream" autoplay playsinline muted></video>
+                  </div>
+                  <img id="stage2-overlay-img" class="stage2-overlay-png" src="assets/stage2_1.png" alt="Накладання нарису ліпнини" crossorigin="anonymous">
+                  <div id="stage2-step-pill" class="stage2-step-pill">Барельєф 1 з 2</div>
+                  <div id="stage2-guide-hint" class="stage2-guide-hint">Сумістіть нарис з елементом дзвінниці</div>
+                  <div id="stage2-camera-loading" class="camera-loading-overlay">
+                    <div class="loading-spinner-small"></div>
+                    <span>Підключення камери...</span>
+                  </div>
+                </div>
+
+                <!-- Zoom Controls Bar -->
+                <div class="zoom-controls-container">
+                  <div class="zoom-header">
+                    <span>Збільшення камери (Зум)</span>
+                    <span id="stage2-zoom-label" style="font-weight: 700; color: #1e3d2f;">1.0x</span>
+                  </div>
+                  <div class="zoom-slider-row">
+                    <button type="button" class="zoom-btn" id="stage2-zoom-minus">&minus;</button>
+                    <input type="range" class="zoom-slider" id="stage2-zoom-slider" min="1" max="5" step="0.1" value="1">
+                    <button type="button" class="zoom-btn" id="stage2-zoom-plus">&plus;</button>
+                  </div>
+                  <div class="zoom-chips-row">
+                    <button type="button" class="zoom-chip active" data-zoom="1">1x</button>
+                    <button type="button" class="zoom-chip" data-zoom="2">2x</button>
+                    <button type="button" class="zoom-chip" data-zoom="3">3x</button>
+                    <button type="button" class="zoom-chip" data-zoom="5">5x</button>
+                  </div>
+                </div>
+
+                <!-- Shutter Action Button -->
+                <div class="shutter-action-bar">
+                  <button id="stage2-capture-btn" class="camera-shutter-btn">
+                    <div class="shutter-inner-ring">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                        <circle cx="12" cy="13" r="4"></circle>
+                      </svg>
+                    </div>
+                    <span id="stage2-capture-text">Сфотографувати барельєф 1</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STAGE 6: Point 2 Completed / Transition to Point 3 View -->
+              <div id="quest-point2-complete-view" style="display: none;">
+                <div class="point2-stub-card">
+                  <div class="point2-icon-circle" style="background: linear-gradient(135deg, #2e7d32 0%, #4caf50 100%);">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                  </div>
+                  <h3 style="color: #1e3d2f; font-size: 20px; font-weight: 700; margin-bottom: 8px;">Точка 2: Завдання виконано!</h3>
+                  <div class="point2-reward-badge" style="background: #e8f5e9; color: #1e3d2f; border-color: #c8e6c9;">
+                    📍 Точка 2 пройдена • Прогрес: 2 з 3 точок
+                  </div>
+                  <p class="point2-desc" style="margin-top: 8px;">
+                    Чудово! Ви успішно відшукали та сфотографували обидва елементи ліпнини на Софійській дзвінниці. Усі знімки збережено в галерею вашого пристрою.
+                  </p>
+
+                  <!-- 2-Photo Gallery Grid of captured reliefs -->
+                  <div class="stage2-photos-grid">
+                    <div class="stage2-photo-item">
+                      <img id="stage2-result-img-1" alt="Барельєф 1">
+                      <div class="stage2-photo-label">Барельєф 1: Розетка</div>
+                    </div>
+                    <div class="stage2-photo-item">
+                      <img id="stage2-result-img-2" alt="Барельєф 2">
+                      <div class="stage2-photo-label">Барельєф 2: Арка</div>
+                    </div>
+                  </div>
+
+                  <button id="proceed-point3-btn" class="action-btn-primary" style="margin-top: 12px;">
+                    <span>Перейти до Точки 3</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STAGE 7: Point 3 Navigation & Map View -->
+              <div id="quest-point3-view" style="display: none;">
+                <!-- Navigation Instruction Card for Point 3 -->
+                <div class="quest-navigation-card" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="background: #1e3d2f; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">3</span>
+                    <h4 style="font-size: 15px; font-weight: 600; color: #1e3d2f; margin: 0; font-family: 'Outfit', sans-serif;">Точка 3: Верхня альтанка на Володимирській гірці</h4>
+                  </div>
+                  <p style="font-size: 13px; color: #666; margin: 0 0 12px 32px; font-family: 'Outfit', sans-serif;">Прямуйте до Верхньої альтанки на Володимирській гірці.</p>
+                  
+                  <!-- Audio Guide Player for Point 3 -->
+                  <div class="audio-guide-player" style="background: #f7f9f6; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e5ece2;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <span id="audio3-title-status" style="font-size: 12px; font-weight: 600; color: #1e3d2f; font-family: 'Outfit', sans-serif;">Прослухати гід під час руху до точки</span>
+                      <span id="audio3-time" style="font-size: 11px; color: #666; font-family: 'Outfit', sans-serif;">0:00 / 0:00</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <!-- Play/Pause Button -->
+                      <button id="audio3-play-btn" style="background: #1e3d2f; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex-shrink: 0;">
+                        <svg id="play3-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="pause3-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      </button>
+                      
+                      <!-- Progress Bar -->
+                      <div style="flex: 1; display: flex; align-items: center; position: relative;">
+                        <input id="audio3-progress" type="range" min="0" max="100" value="0" style="width: 100%; accent-color: #1e3d2f; cursor: pointer; margin: 0; height: 4px;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Map Container for Point 3 with floating Start Navigation Button -->
+                <div style="position: relative; height: 260px; margin-bottom: 16px;">
+                  <div id="quest-map-3" style="height: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5ece2; position: relative; z-index: 1;"></div>
+                  <button id="nav3-start-btn" style="position: absolute; bottom: 16px; right: 16px; background: #1e3d2f; color: white; border: none; padding: 12px 20px; border-radius: 24px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Старт</span>
+                  </button>
+                </div>
+
+                <!-- Prominent 'Вже на місці' Button below map -->
+                <button id="quest-arrived-btn-3" class="quest-arrived-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>Вже на місці</span>
+                </button>
+              </div>
+
+              <!-- STAGE 8: Point 3 Task View (Upper Gazebo & QR Scanner for Wagner Music) -->
+              <div id="quest-point3-task-view" style="display: none;">
+                <div class="quest-task-badge">
+                  <span>Точка 3 &bull; Завдання</span>
+                </div>
+
+                <div class="quest-story-card">
+                  <p class="quest-story-text">
+                    Старший брат Сергія, Олександр Виноградський, згодом став відомим диригентом, багато подорожував Європою та знайомив київську публіку з європейською музикою свого часу. Разом із новими музичними враженнями до Києва потрапляли партитури й мелодії, що звучали в європейських концертних залах. І просто зараз ви можете почути одну з композицій тієї епохи — музику, яка переносить нас у атмосферу європейського XIX століття.
+                  </p>
+                  <div class="quest-instruction-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a6b3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Орієнтуючись на світлину нижче, відшукайте на металевій частині огорожі особливий замок із QR-кодом. Відскануйте його через вікно квесту — і на мить перенесіться в минуле: послухайте музику, що створювала атмосферу тієї епохи.</span>
+                  </div>
+                </div>
+
+                <!-- Landmark Photo: Verkhnya Altanka -->
+                <div class="stage3-orientyr-container">
+                  <img id="stage3-orientyr-img" class="stage3-orientyr-photo" src="assets/orientyr-altanka.jpg" alt="Орієнтир: Верхня альтанка на Володимирській гірці" crossorigin="anonymous">
+                  <div class="stage3-orientyr-caption">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3d2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span>Орієнтир: Верхня альтанка (металева огорожа)</span>
+                  </div>
+                </div>
+
+                <!-- QR Code Camera Scanner Viewfinder -->
+                <div class="stage3-qr-scanner-box" id="stage3-qr-container">
+                  <div class="stage3-qr-video-wrapper">
+                    <video id="stage3-qr-video" autoplay playsinline muted></video>
+                    <canvas id="stage3-qr-canvas" style="display: none;"></canvas>
+                  </div>
+                  <div class="qr-scanner-hud" id="stage3-qr-hud">
+                    <div class="qr-reticle-box">
+                      <div class="qr-corner qr-corner-tl"></div>
+                      <div class="qr-corner qr-corner-tr"></div>
+                      <div class="qr-corner qr-corner-bl"></div>
+                      <div class="qr-corner qr-corner-br"></div>
+                      <div class="qr-laser-line" id="stage3-qr-laser"></div>
+                    </div>
+                    <div class="qr-status-pill" id="stage3-qr-status">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <span>Наведіть на QR-код замка</span>
+                    </div>
+                  </div>
+                  <div id="stage3-camera-loading" class="camera-loading-overlay">
+                    <div class="loading-spinner-small"></div>
+                    <span>Підключення камери...</span>
+                  </div>
+                </div>
+
+                <!-- Simulation button for desktop/emulator testing -->
+                <div style="text-align: center; margin-bottom: 16px;">
+                  <button id="stage3-mock-scan-btn" type="button" style="background: none; border: 1px dashed #a2bfa9; color: #2d5a3c; padding: 6px 14px; border-radius: 20px; font-size: 11px; font-weight: 500; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    🔍 Тест: розпізнати код замка
+                  </button>
+                </div>
+
+                <!-- Wagner Music Card (unlocked upon QR match) -->
+                <div id="stage3-music-card" class="stage3-music-card" style="display: none;">
+                  <div class="music-card-header">
+                    <div class="music-vinyl-icon" id="stage3-vinyl-icon">
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </div>
+                    <div class="music-card-titles">
+                      <h4>Ріхард Вагнер</h4>
+                      <p>Музика європейського XIX століття</p>
+                    </div>
+                  </div>
+                  <div class="music-player-bar">
+                    <div class="music-controls-row">
+                      <button id="wagner-play-btn" class="music-play-btn" type="button">
+                        <svg id="wagner-play-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="wagner-pause-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      </button>
+                      <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                          <span id="wagner-status-text" style="font-size: 11px; font-weight: 600; color: #1e3d2f;">Відтворення...</span>
+                          <span id="wagner-time" style="font-size: 11px; color: #666; font-family: 'Outfit', sans-serif;">0:00 / 0:00</span>
+                        </div>
+                        <input id="wagner-progress" type="range" min="0" max="100" value="0" style="width: 100%; accent-color: #1e3d2f; cursor: pointer; margin: 0; height: 4px;" />
+                      </div>
+                      <div class="sound-wave-bars" id="stage3-wave-bars">
+                        <div class="sound-wave-bar"></div>
+                        <div class="sound-wave-bar"></div>
+                        <div class="sound-wave-bar"></div>
+                        <div class="sound-wave-bar"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Proceed to Point 4 Button -->
+                <button id="proceed-point4-btn" class="action-btn-primary" style="display: none; margin-top: 16px;">
+                  <span>Перейти до точки 4</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- STAGE 9: Point 4 Navigation & Map View -->
+              <div id="quest-point4-view" style="display: none;">
+                <!-- Navigation Instruction Card for Point 4 -->
+                <div class="quest-navigation-card" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="background: #1e3d2f; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">4</span>
+                    <h4 style="font-size: 15px; font-weight: 600; color: #1e3d2f; margin: 0; font-family: 'Outfit', sans-serif;">Точка 4: Пам'ятник князю Володимиру</h4>
+                  </div>
+                  <p style="font-size: 13px; color: #666; margin: 0 0 12px 32px; font-family: 'Outfit', sans-serif;">Прямуйте до Пам'ятника князю Володимиру на Володимирській гірці.</p>
+                  
+                  <!-- Audio Guide Player for Point 4 -->
+                  <div class="audio-guide-player" style="background: #f7f9f6; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e5ece2;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <span id="audio4-title-status" style="font-size: 12px; font-weight: 600; color: #1e3d2f; font-family: 'Outfit', sans-serif;">Прослухати гід під час руху до точки</span>
+                      <span id="audio4-time" style="font-size: 11px; color: #666; font-family: 'Outfit', sans-serif;">0:00 / 0:00</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <!-- Play/Pause Button -->
+                      <button id="audio4-play-btn" style="background: #1e3d2f; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex-shrink: 0;">
+                        <svg id="play4-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="pause4-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      </button>
+                      
+                      <!-- Progress Bar -->
+                      <div style="flex: 1; display: flex; align-items: center; position: relative;">
+                        <input id="audio4-progress" type="range" min="0" max="100" value="0" style="width: 100%; accent-color: #1e3d2f; cursor: pointer; margin: 0; height: 4px;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Map Container for Point 4 with floating Start Navigation Button -->
+                <div style="position: relative; height: 260px; margin-bottom: 16px;">
+                  <div id="quest-map-4" style="height: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5ece2; position: relative; z-index: 1;"></div>
+                  <button id="nav4-start-btn" style="position: absolute; bottom: 16px; right: 16px; background: #1e3d2f; color: white; border: none; padding: 12px 20px; border-radius: 24px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Старт</span>
+                  </button>
+                </div>
+
+                <!-- Prominent 'Вже на місці' Button below map -->
+                <button id="quest-arrived-btn-4" class="quest-arrived-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>Вже на місці</span>
+                </button>
+              </div>
+
+              <!-- STAGE 10: Point 4 Task View (Fountain & Coin Wish) -->
+              <div id="quest-point4-task-view" style="display: none;">
+                <div class="quest-task-badge">
+                  <span>Точка 4 &bull; Завдання</span>
+                </div>
+
+                <div class="quest-story-card">
+                  <p class="quest-story-text">
+                    Біля фонтану на Володимирській гірці завжди було гамірно й весело — діти збиралися тут, грали в піжмурки та квача, ганяли м'яча, крутили обручі й вигадували власні забави. Цілком можливо, що серед дитячого галасу тут колись лунав і голос малого Сергія Виноградського.
+                  </p>
+                  <div class="quest-instruction-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a6b3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Пройдіть звивистим лабіринтом до самого серця фонтану, а діставшись центру — киньте монетку на щастя й загадайте бажання. Нехай ця маленька традиція залишить вам добрий спогад про прогулянку Володимирською гіркою.</span>
+                  </div>
+                </div>
+
+                <!-- Landmark Photo: Fountain at Volodymyr Hill -->
+                <div class="stage3-orientyr-container">
+                  <img id="stage4-orientyr-img" class="stage3-orientyr-photo" src="assets/orient-volodymyr.jpg" alt="Орієнтир: Фонтан біля пам'ятника князю Володимиру" crossorigin="anonymous">
+                  <div class="stage3-orientyr-caption">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e3d2f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    <span>Орієнтир: Фонтан біля пам'ятника князю Володимиру</span>
+                  </div>
+                </div>
+
+                <!-- Interactive Coin Wish Card -->
+                <div class="stage4-coin-card" id="stage4-coin-container">
+                  <div class="stage4-coin-header">
+                    <div class="stage4-coin-circle" id="stage4-coin-visual">
+                      <img src="assets/coin.png" alt="Монетка" style="width: 38px; height: 38px; object-fit: contain;">
+                    </div>
+                    <div>
+                      <h4 style="margin: 0 0 2px; font-size: 15px; font-weight: 700; color: #1e3d2f;">Традиція фонтану</h4>
+                      <p style="margin: 0; font-size: 12px; color: #4b6656;">Киньте монетку на щастя та загадайте бажання</p>
+                    </div>
+                  </div>
+
+                  <button id="stage4-throw-coin-btn" type="button" class="stage4-throw-btn">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path>
+                      <line x1="12" y1="6" x2="12" y2="8"></line>
+                      <line x1="12" y1="16" x2="12" y2="18"></line>
+                    </svg>
+                    <span>Кинути монетку на щастя ✨</span>
+                  </button>
+
+                  <div id="stage4-wish-result" class="stage4-wish-result" style="display: none;">
+                    <div style="font-size: 26px; margin-bottom: 4px;">🪙✨</div>
+                    <div style="font-weight: 700; color: #1e3d2f; font-size: 14px;">Монетку кинуто! Нехай ваше бажання здійсниться!</div>
+                    <div style="font-size: 12px; color: #2e7d32; margin-top: 4px; font-weight: 600;">Традицію виконано! Рушаємо далі</div>
+                  </div>
+                </div>
+
+                <!-- Proceed to Point 5 Button -->
+                <button id="proceed-point5-btn" class="action-btn-primary" style="margin-top: 16px;">
+                  <span>Перейти до Точки 5</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- STAGE 11: Point 5 Navigation & Map View -->
+              <div id="quest-point5-view" style="display: none;">
+                <!-- Navigation Instruction Card for Point 5 -->
+                <div class="quest-navigation-card" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="background: #1e3d2f; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">5</span>
+                    <h4 style="font-size: 15px; font-weight: 600; color: #1e3d2f; margin: 0; font-family: 'Outfit', sans-serif;">Точка 5: Володимирський узвіз, 2</h4>
+                  </div>
+                  <p style="font-size: 13px; color: #666; margin: 0 0 12px 32px; font-family: 'Outfit', sans-serif;">Національна філармонія України (колишнє Купецьке зібрання).</p>
+                  
+                  <!-- Audio Guide Player for Point 5 -->
+                  <div class="audio-guide-player" style="background: #f7f9f6; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e5ece2;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <span id="audio5-title-status" style="font-size: 12px; font-weight: 600; color: #1e3d2f; font-family: 'Outfit', sans-serif;">Прослухати гід під час руху до точки</span>
+                      <span id="audio5-time" style="font-size: 11px; color: #666; font-family: 'Outfit', sans-serif;">0:00 / 0:00</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <!-- Play/Pause Button -->
+                      <button id="audio5-play-btn" style="background: #1e3d2f; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex-shrink: 0;">
+                        <svg id="play5-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="pause5-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      </button>
+                      
+                      <!-- Progress Bar -->
+                      <div style="flex: 1; display: flex; align-items: center; position: relative;">
+                        <input id="audio5-progress" type="range" min="0" max="100" value="0" style="width: 100%; accent-color: #1e3d2f; cursor: pointer; margin: 0; height: 4px;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Map Container for Point 5 with floating Start Navigation Button -->
+                <div style="position: relative; height: 260px; margin-bottom: 16px;">
+                  <div id="quest-map-5" style="height: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5ece2; position: relative; z-index: 1;"></div>
+                  <button id="nav5-start-btn" style="position: absolute; bottom: 16px; right: 16px; background: #1e3d2f; color: white; border: none; padding: 12px 20px; border-radius: 24px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Старт</span>
+                  </button>
+                </div>
+
+                <!-- Prominent 'Вже на місці' Button below map -->
+                <button id="quest-arrived-btn-5" class="quest-arrived-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>Вже на місці</span>
+                </button>
+              </div>
+
+              <!-- STAGE 12: Point 5 Task View (Philharmonic Poster Camera & Analysis) -->
+              <div id="quest-point5-task-view" style="display: none;">
+                <div class="quest-task-badge">
+                  <span>Точка 5 &bull; Завдання</span>
+                </div>
+
+                <div class="quest-story-card">
+                  <p class="quest-story-text">
+                    Афіші Купецького зібрання того часу відображали насичене музичне життя Києва, запрошуючи містян на концерти оркестру, виступи відомих диригентів і музикантів та вечори класичної музики.
+                  </p>
+                  <div class="quest-instruction-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a6b3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Сфотографуй сучасну афішу біля входу до Національної філармонії України — будівлі колишнього Купецького зібрання.</span>
+                  </div>
+                </div>
+
+                <!-- Poster Camera Viewfinder -->
+                <div class="stage5-camera-box" id="stage5-camera-box">
+                  <div class="stage5-camera-wrapper">
+                    <video id="stage5-camera-stream" autoplay playsinline muted></video>
+                    <div id="stage5-camera-loading" class="camera-loading-overlay">
+                      <div class="loading-spinner"></div>
+                      <span>Підключення камери...</span>
+                    </div>
+                    <!-- Frame Guide for Poster -->
+                    <div class="stage5-frame-guide">
+                      <div class="frame-guide-corner top-left"></div>
+                      <div class="frame-guide-corner top-right"></div>
+                      <div class="frame-guide-corner bottom-left"></div>
+                      <div class="frame-guide-corner bottom-right"></div>
+                      <div class="frame-guide-hint">Розмістіть афішу в рамці</div>
+                    </div>
+                  </div>
+
+                  <!-- Shutter Action Bar -->
+                  <div class="shutter-action-bar" style="margin-top: 12px;">
+                    <button id="stage5-capture-btn" class="camera-shutter-btn" type="button">
+                      <div class="shutter-inner-ring">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                          <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                      </div>
+                      <span>Сфотографувати афішу</span>
+                    </button>
+                  </div>
+
+                  <!-- Hidden canvas for analysis and compositing -->
+                  <canvas id="stage5-composite-canvas" style="display: none;"></canvas>
+                  <input type="file" id="stage5-file-input" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Interactive Analysis / Scanning UI (appears after photo is captured) -->
+                <div id="stage5-analysis-card" class="stage5-analysis-card" style="display: none;">
+                  <div class="stage5-analysis-header">
+                    <div class="stage5-scan-indicator">
+                      <div class="pulse-dot"></div>
+                      <span id="stage5-scan-status-text">Аналіз афіші... Розпізнавання заголовка</span>
+                    </div>
+                  </div>
+
+                  <!-- Photo snapshot with laser scanning effect -->
+                  <div class="stage5-scanned-photo-container">
+                    <img id="stage5-captured-preview" alt="Сфотографована афіша">
+                    <div class="stage5-laser-line" id="stage5-laser-line"></div>
+                  </div>
+
+                  <!-- Extracted Information Form / Confirmation -->
+                  <div id="stage5-extracted-info" class="stage5-extracted-info" style="display: none;">
+                    <div class="info-group">
+                      <label class="info-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1e3d2f" stroke-width="2">
+                          <path d="M9 18V5l12-2v13"></path>
+                          <circle cx="6" cy="18" r="3"></circle>
+                          <circle cx="18" cy="16" r="3"></circle>
+                        </svg>
+                        <span>Розпізнана назва концерту / твору:</span>
+                      </label>
+                      <div class="info-input-wrapper">
+                        <input type="text" id="stage5-poster-title-input" class="vintage-title-input" value="Симфонія №5 Людвіга ван Бетховена">
+                        <button type="button" id="stage5-edit-title-btn" class="input-action-btn" title="Редагувати назву">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 20h9"></path>
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                          </svg>
+                        </button>
+                      </div>
+
+                      <!-- Quick Select suggestions -->
+                      <div class="title-suggestions-row">
+                        <span class="suggestion-chip active" data-title="Симфонія №5 Бетховена">Симфонія Бетховена</span>
+                        <span class="suggestion-chip" data-title="Шедеври світової класики">Шедеври класики</span>
+                        <span class="suggestion-chip" data-title="Симфонічний оркестр Купецького зібрання">Оркестр зібрання</span>
+                      </div>
+                    </div>
+
+                    <div class="info-group">
+                      <label class="info-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1e3d2f" stroke-width="2">
+                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                          <line x1="16" y1="2" x2="16" y2="6"></line>
+                          <line x1="8" y1="2" x2="8" y2="6"></line>
+                          <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                        <span>Дата зйомки афіші:</span>
+                      </label>
+                      <div id="stage5-current-date-badge" class="date-badge"></div>
+                    </div>
+
+                    <!-- Generate Vintage Poster Button -->
+                    <button id="stage5-generate-poster-btn" class="action-btn-primary" style="margin-top: 12px;">
+                      <span>Згенерувати старовинну афішу ✨</span>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STAGE 13: Point 5 Result View (Generated Historical Poster) -->
+              <div id="quest-point5-result-view" style="display: none;">
+                <div class="result-success-badge">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  <span>Старовинну афішу збережено в галерею!</span>
+                </div>
+
+                <div class="stage5-poster-preview-card">
+                  <img id="stage5-poster-preview-img" alt="Згенерована старовинна афіша Купецького зібрання">
+                  <div class="merged-preview-caption">
+                    <span>Київське Купецьке зібрання &bull; Колонна зала філармонії</span>
+                  </div>
+                </div>
+
+                <div class="result-actions-container">
+                  <div class="result-btn-row">
+                    <button id="stage5-retake-btn" class="action-btn-secondary">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                      </svg>
+                      <span>Перезняти</span>
+                    </button>
+                    <button id="stage5-fullscreen-btn" class="action-btn-secondary">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 3 21 3 21 9"></polyline>
+                        <polyline points="9 21 3 21 3 15"></polyline>
+                        <line x1="21" y1="3" x2="14" y2="10"></line>
+                        <line x1="3" y1="21" x2="10" y2="14"></line>
+                      </svg>
+                      <span>Переглянути</span>
+                    </button>
+                  </div>
+
+                  <!-- Proceed to Point 6 Button -->
+                  <button id="proceed-point6-btn" class="action-btn-primary" style="margin-top: 14px;">
+                    <span>Перейти до Точки 6</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STAGE 14: Point 6 Navigation & Map View -->
+              <div id="quest-point6-view" style="display: none;">
+                <!-- Navigation Instruction Card for Point 6 -->
+                <div class="quest-navigation-card" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="background: #1e3d2f; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">6</span>
+                    <h4 style="font-size: 15px; font-weight: 600; color: #1e3d2f; margin: 0; font-family: 'Outfit', sans-serif;">Точка 6: бульвар Тараса Шевченка, 18</h4>
+                  </div>
+                  <p style="font-size: 13px; color: #666; margin: 0 0 12px 32px; font-family: 'Outfit', sans-serif;">Друга київська гімназія.</p>
+                  
+                  <!-- Audio Guide Player for Point 6 -->
+                  <div class="audio-guide-player" style="background: #f7f9f6; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e5ece2;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <span id="audio6-title-status" style="font-size: 12px; font-weight: 600; color: #1e3d2f; font-family: 'Outfit', sans-serif;">Прослухати гід під час руху до точки</span>
+                      <span id="audio6-time" style="font-size: 11px; color: #666; font-family: 'Outfit', sans-serif;">0:00 / 0:00</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <!-- Play/Pause Button -->
+                      <button id="audio6-play-btn" style="background: #1e3d2f; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex-shrink: 0;">
+                        <svg id="play6-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="pause6-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      </button>
+                      
+                      <!-- Progress Bar -->
+                      <div style="flex: 1; display: flex; align-items: center; position: relative;">
+                        <input id="audio6-progress" type="range" min="0" max="100" value="0" style="width: 100%; accent-color: #1e3d2f; cursor: pointer; margin: 0; height: 4px;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Map Container for Point 6 with floating Start Navigation Button -->
+                <div style="position: relative; height: 260px; margin-bottom: 16px;">
+                  <div id="quest-map-6" style="height: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5ece2; position: relative; z-index: 1;"></div>
+                  <button id="nav6-start-btn" style="position: absolute; bottom: 16px; right: 16px; background: #1e3d2f; color: white; border: none; padding: 12px 20px; border-radius: 24px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Старт</span>
+                  </button>
+                </div>
+
+                <!-- Prominent 'Вже на місці' Button below map -->
+                <button id="quest-arrived-btn-6" class="quest-arrived-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>Вже на місці</span>
+                </button>
+              </div>
+
+              <!-- STAGE 15: Point 6 Task View (1910 Natural Science Quiz) -->
+              <div id="quest-point6-task-view" style="display: none;">
+                <div class="quest-task-badge">
+                  <span>Точка 6 &bull; Завдання</span>
+                </div>
+
+                <div class="quest-story-card">
+                  <p class="quest-story-text">
+                    У межах ініціативи Winogradskiy Institute пропонуємо учасникам квесту здійснити невелику подорож у минуле та перевірити свої знання так, як це робили школярі понад сто років тому.
+                  </p>
+                  <p class="quest-story-text" style="margin-top: 8px;">
+                    Перед вами — запитання з дореволюційного підручника Л. С. Севрука з природознавства, виданого 1910 року. Спробуйте відповісти на них, спираючись на власні знання та логіку.
+                  </p>
+                  <div class="quest-instruction-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4a6b3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <span>Спробуйте дати правильні відповіді на якомога більшу кількість запитань!</span>
+                  </div>
+                </div>
+
+                <!-- Interactive Quiz Container -->
+                <div class="quiz-container" id="point6-quiz-box">
+                  <!-- Progress Header -->
+                  <div class="quiz-progress-header">
+                    <div class="quiz-progress-text">
+                      <span id="point6-quiz-step-title">Питання 1 з 5</span>
+                      <span id="point6-quiz-score-badge">Рахунок: 0</span>
+                    </div>
+                    <div class="quiz-progress-track">
+                      <div id="point6-quiz-progress-fill" class="quiz-progress-fill" style="width: 20%;"></div>
+                    </div>
+                  </div>
+
+                  <!-- Question Card -->
+                  <div class="quiz-card" id="point6-question-card">
+                    <div class="quiz-vintage-stamp">Іспит 1910 р.</div>
+                    <h3 id="point6-question-title" class="quiz-question-title">1. Тепліше чи холодніше стає повітря від випарювання води?</h3>
+
+                    <!-- Options List -->
+                    <div id="point6-options-container" class="quiz-options-list">
+                      <!-- Dynamically rendered options -->
+                    </div>
+
+                    <!-- Explanation Card (Shown after selection) -->
+                    <div id="point6-explanation-card" class="quiz-explanation-card" style="display: none;">
+                      <div class="explanation-badge">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                        <span>Пояснення підручника Севрука</span>
+                      </div>
+                      <p id="point6-explanation-text" class="explanation-text"></p>
+                      <button id="point6-next-btn" class="quiz-next-btn" type="button">
+                        <span>Наступне питання</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                          <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Quiz Completion Result Card (Shown after Q5) -->
+                  <div id="point6-quiz-result" class="quiz-result-card" style="display: none;">
+                    <div class="quiz-result-header">
+                      <div class="result-laurel-icon">🎓</div>
+                      <h3 class="result-title">Іспит складено!</h3>
+                      <p id="point6-final-score-text" class="result-subtitle">Ви дали 5 з 5 правильних відповідей.</p>
+                    </div>
+
+                    <div class="point2-reward-badge" style="background: #e8f5e9; color: #1e3d2f; border-color: #c8e6c9; margin: 12px 0;">
+                      🪙 +5 WinCoins за успішне складання гімназійного іспиту
+                    </div>
+
+                    <p style="font-size: 13px; color: #4b6656; line-height: 1.5; margin: 0 0 16px;">
+                      Вітаємо! Ви чудово впоралися із запитаннями з природознавства та продемонстрували глибоку ерудицію рівня гімназистів початку XX століття.
+                    </p>
+
+                    <!-- Proceed to Point 7 Button -->
+                    <button id="proceed-point7-btn" class="action-btn-primary">
+                      <span>Перейти до Точки 7</span>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- STAGE 16: Point 7 Navigation & Map View -->
+              <div id="quest-point7-view" style="display: none;">
+                <!-- Navigation Instruction Card for Point 7 -->
+                <div class="quest-navigation-card" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="background: #1e3d2f; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">7</span>
+                    <h4 style="font-size: 15px; font-weight: 600; color: #1e3d2f; margin: 0; font-family: 'Outfit', sans-serif;">Точка 7: Володимирська, 60</h4>
+                  </div>
+                  <p style="font-size: 13px; color: #666; margin: 0 0 12px 32px; font-family: 'Outfit', sans-serif;">Університет Святого Володимира (Київський національний університет імені Тараса Шевченка)</p>
+                  
+                  <!-- Audio Guide Player for Point 7 -->
+                  <div class="audio-guide-player" style="background: #f7f9f6; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e5ece2;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <span id="audio7-title-status" style="font-size: 12px; font-weight: 600; color: #1e3d2f; font-family: 'Outfit', sans-serif;">Прослухати гід під час руху до точки</span>
+                      <span id="audio7-time" style="font-size: 11px; color: #666; font-family: 'Outfit', sans-serif;">0:00 / 0:00</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <!-- Play/Pause Button -->
+                      <button id="audio7-play-btn" style="background: #1e3d2f; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex-shrink: 0;">
+                        <svg id="play7-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="pause7-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      </button>
+                      
+                      <!-- Progress Bar -->
+                      <div style="flex: 1; display: flex; align-items: center; position: relative;">
+                        <input id="audio7-progress" type="range" min="0" max="100" value="0" style="width: 100%; accent-color: #1e3d2f; cursor: pointer; margin: 0; height: 4px;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Map Container for Point 7 with floating Start Navigation Button -->
+                <div style="position: relative; height: 260px; margin-bottom: 16px;">
+                  <div id="quest-map-7" style="height: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5ece2; position: relative; z-index: 1;"></div>
+                  <button id="nav7-start-btn" style="position: absolute; bottom: 16px; right: 16px; background: #1e3d2f; color: white; border: none; padding: 12px 20px; border-radius: 24px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Старт</span>
+                  </button>
+                </div>
+
+                <!-- Prominent 'Вже на місці' Button below map -->
+                <button id="quest-arrived-btn-7" class="quest-arrived-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                  <span>Вже на місці</span>
+                </button>
+              </div>
+
+              <!-- STAGE 17: Point 7 Task View (Find Portrait of Winogradsky) -->
+              <div id="quest-point7-task-view" style="display: none;">
+                <!-- Historical Context & Assignment Card -->
+                <div class="stage7-task-card">
+                  <div class="stage7-badge-pill">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                      <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+                    </svg>
+                    <span>КНУ ім. Тараса Шевченка • Червоний корпус</span>
+                  </div>
+
+                  <p class="stage7-context-text">
+                    У стінах Київського національного університету імені Тараса Шевченка зберігається портрет Сергія Виноградського — видатного вченого, чиї відкриття стали фундаментальними для розвитку мікробіології.
+                  </p>
+
+                  <div class="stage7-assignment-box">
+                    <div class="stage7-assignment-title">Завдання</div>
+                    <ul class="stage7-assignment-steps">
+                      <li>
+                        <span class="step-num-badge">1</span>
+                        <span>Зайдіть через парадні двері Червоного корпусу університету. На прохідній скажіть «Юрія Фарм».</span>
+                      </li>
+                      <li>
+                        <span class="step-num-badge">2</span>
+                        <span>Пройдіть прямо коридором та поверніть ліворуч. Зайдіть до зали з портретами видатних діячів, знайдіть серед них портрет Сергія Виноградського та зробіть його фото.</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Vertical Camera Viewfinder Box -->
+                <div class="stage7-camera-box" id="stage7-camera-box">
+                  <div class="stage7-camera-wrapper">
+                    <!-- Live Camera Stream -->
+                    <video id="stage7-camera-stream" autoplay playsinline muted></video>
+                    
+                    <!-- Captured Photo Preview -->
+                    <img id="stage7-captured-preview" alt="Зроблений портрет" style="display: none; width: 100%; height: 100%; object-fit: cover;">
+                    
+                    <!-- Camera Loading Overlay -->
+                    <div id="stage7-camera-loading" class="camera-loading-overlay">
+                      <div class="loading-spinner"></div>
+                      <span>Підключення камери...</span>
+                    </div>
+
+                    <!-- Frame Guide for Vertical Portrait -->
+                    <div class="stage7-frame-guide" id="stage7-frame-guide">
+                      <div class="frame-guide-corner top-left"></div>
+                      <div class="frame-guide-corner top-right"></div>
+                      <div class="frame-guide-corner bottom-left"></div>
+                      <div class="frame-guide-corner bottom-right"></div>
+                      <div class="stage7-guide-hint">Наведіть на портрет</div>
+                    </div>
+                  </div>
+
+                  <!-- Action Bar: Shutter Button -->
+                  <div class="shutter-action-bar" id="stage7-shutter-bar" style="margin-top: 12px;">
+                    <button id="stage7-capture-btn" class="camera-shutter-btn" type="button">
+                      <div class="shutter-inner-ring">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                          <circle cx="12" cy="13" r="4"></circle>
+                        </svg>
+                      </div>
+                      <span>Сфотографувати</span>
+                    </button>
+                  </div>
+
+                  <!-- Hidden canvas and file input -->
+                  <canvas id="stage7-capture-canvas" style="display: none;"></canvas>
+                  <input type="file" id="stage7-file-input" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Post-Capture Result & Next Step Area -->
+                <div id="stage7-result-area" style="display: none; margin-top: 16px;">
+                  <div class="result-success-badge">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2e7d32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span>Портрет успішно сфотографовано!</span>
+                  </div>
+
+
+
+                  <div style="display: flex; gap: 10px; margin-bottom: 14px;">
+                    <button id="stage7-retake-btn" type="button" style="flex: 1; background: #ffffff; color: #1e3d2f; border: 1.5px solid #1e3d2f; border-radius: 24px; padding: 10px 16px; font-weight: 600; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Outfit', sans-serif;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+                      </svg>
+                      <span>Перезняти</span>
+                    </button>
+                  </div>
+
+                  <!-- Proceed to Point 8 Button -->
+                  <button id="proceed-point8-btn" class="action-btn-primary">
+                    <span>Перейти до Точки 8</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- STAGE 18: Point 8 Navigation & Final Quest View -->
+              <div id="quest-point8-view" style="display: none;">
+                <!-- Navigation Instruction Card for Point 8 -->
+                <div class="quest-navigation-card" style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 16px;">
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                    <span style="background: #1e3d2f; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600;">8</span>
+                    <h4 style="font-size: 15px; font-weight: 600; color: #1e3d2f; margin: 0; font-family: 'Outfit', sans-serif;">Точка 8: Олеся Гончара, 76</h4>
+                  </div>
+                  <p style="font-size: 13px; color: #4b5563; margin: 0 0 12px 32px; font-family: 'Outfit', sans-serif; font-weight: 500;">Прямуйте до скверу ім. Сергія Виноградського</p>
+                  
+                  <!-- Audio Guide Player for Point 8 -->
+                  <div class="audio-guide-player" style="background: #f7f9f6; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 8px; border: 1px solid #e5ece2;">
+                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                      <span id="audio8-title-status" style="font-size: 12px; font-weight: 600; color: #1e3d2f; font-family: 'Outfit', sans-serif;">Прослухати гід під час руху до точки</span>
+                      <span id="audio8-time" style="font-size: 11px; color: #666; font-family: 'Outfit', sans-serif;">0:00 / 0:00</span>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                      <!-- Play/Pause Button -->
+                      <button id="audio8-play-btn" type="button" style="background: #1e3d2f; color: white; border: none; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; flex-shrink: 0;">
+                        <svg id="play8-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-left: 2px;">
+                          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                        <svg id="pause8-icon" style="display: none;" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                          <rect x="6" y="4" width="4" height="16"></rect>
+                          <rect x="14" y="4" width="4" height="16"></rect>
+                        </svg>
+                      </button>
+                      
+                      <!-- Progress Bar -->
+                      <div style="flex: 1; display: flex; align-items: center; position: relative;">
+                        <input id="audio8-progress" type="range" min="0" max="100" value="0" style="width: 100%; accent-color: #1e3d2f; cursor: pointer; margin: 0; height: 4px;" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Map Container for Point 8 with floating Start Navigation Button -->
+                <div style="position: relative; height: 260px; margin-bottom: 16px;">
+                  <div id="quest-map-8" style="height: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); border: 2px solid #e5ece2; position: relative; z-index: 1;"></div>
+                  <button id="nav8-start-btn" type="button" style="position: absolute; bottom: 16px; right: 16px; background: #1e3d2f; color: white; border: none; padding: 12px 20px; border-radius: 24px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.25); z-index: 500; display: flex; align-items: center; gap: 8px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                    </svg>
+                    <span>Старт</span>
+                  </button>
+                </div>
+
+                <!-- Prominent Finish Quest Button -->
+                <button id="quest-finish-btn" class="quest-arrived-btn" type="button" style="background: linear-gradient(135deg, #1e3d2f 0%, #2e7d32 100%);">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+                  <span>Завершити квест</span>
+                </button>
+
+                <!-- Quest Completion Triumph Card (Hidden initially, shown after click) -->
+                <div id="quest-finish-result" class="quiz-result-card" style="display: none; margin-top: 16px; text-align: center;">
+                  <div class="quiz-result-header">
+                    <div class="result-laurel-icon">🏆</div>
+                    <h3 class="result-title" style="color: #1e3d2f; font-size: 22px; font-weight: 700; margin: 8px 0 4px;">Квест успішно завершено!</h3>
+                    <p class="result-subtitle" style="color: #4b5563; font-size: 14px; margin-bottom: 12px;">Вітаємо! Ви пройшли всі 8 точок маршруту Сергія Виноградського у Києві.</p>
+                  </div>
+
+                  <div id="quest-final-score-badge" class="point2-reward-badge" style="background: #e8f5e9; color: #1e3d2f; border-color: #c8e6c9; margin: 12px auto; font-size: 15px; font-weight: 700;">
+                    🪙 +5 WinCoins за завершення квесту
+                  </div>
+
+                  <p id="quest-total-summary-text" style="font-size: 14px; color: #1e3d2f; font-weight: 600; margin: 10px 0 16px;">
+                    Ваш загальний результат: 10 з 10 WinCoins
+                  </p>
+
+                  <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 16px;">
+                    <button id="return-from-point8-btn" class="action-btn-primary" type="button">
+                      <span>Повернутися до списку квестів</span>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                      </svg>
+                    </button>
+                    <button id="finish-to-rewards-btn" type="button" style="background: #ffffff; color: #1e3d2f; border: 1.5px solid #1e3d2f; border-radius: 24px; padding: 12px 20px; font-weight: 600; font-size: 14px; cursor: pointer; font-family: 'Outfit', sans-serif;">
+                      Переглянути мої винагороди
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Events Sub-Screen -->
+        <div id="events-screen" class="app-screen sub-screen">
+          <div class="screen-navbar">
+            <button class="back-btn">&lsaquo;</button>
+            <h2 class="navbar-title">Події</h2>
+            <div class="placeholder-nav-btn"></div>
+          </div>
+          <div class="screen-content scrollable">
+            <div class="dev-stub-container">
+              <div class="dev-stub-card">
+                <div class="dev-stub-icon-circle">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                  </svg>
+                </div>
+                <h3 class="dev-stub-title">Розділ у розробці</h3>
+                <div class="dev-stub-badge">
+                  <span>🛠️ Події інституту</span>
+                </div>
+                <p class="dev-stub-desc">
+                  Ми готуємо інтерактивний календар заходів, розклад відкритих лекцій та реєстрацію на воркшопи. Незабаром розділ стане доступним!
+                </p>
+                <button type="button" class="dev-stub-btn back-btn">
+                  <span>Повернутися на головну</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Education Sub-Screen -->
+        <div id="education-screen" class="app-screen sub-screen">
+          <div class="screen-navbar">
+            <button class="back-btn">&lsaquo;</button>
+            <h2 class="navbar-title">Навчання</h2>
+            <div class="placeholder-nav-btn"></div>
+          </div>
+          <div class="screen-content scrollable">
+            <div class="dev-stub-container">
+              <div class="dev-stub-card">
+                <div class="dev-stub-icon-circle">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+                    <path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"></path>
+                  </svg>
+                </div>
+                <h3 class="dev-stub-title">Розділ у розробці</h3>
+                <div class="dev-stub-badge">
+                  <span>🎓 Академічні курси</span>
+                </div>
+                <p class="dev-stub-desc">
+                  Розробляємо інтерактивні курси, навчальні матеріали та тести для студентів і молодих науковців. Слідкуйте за оновленнями!
+                </p>
+                <button type="button" class="dev-stub-btn back-btn">
+                  <span>Повернутися на головну</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rewards Sub-Screen -->
+        <div id="community-screen" class="app-screen sub-screen">
+          <div class="screen-navbar">
+            <button class="back-btn">&lsaquo;</button>
+            <h2 class="navbar-title">Винагороди</h2>
+            <div class="placeholder-nav-btn"></div>
+          </div>
+          <div class="screen-content scrollable">
+            <div class="dev-stub-container">
+              <div class="dev-stub-card">
+                <div class="dev-stub-icon-circle">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="8" r="6"></circle>
+                    <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+                  </svg>
+                </div>
+                <h3 class="dev-stub-title">Розділ у розробці</h3>
+                <div class="dev-stub-badge">
+                  <span>🏆 Нагороди та мерч</span>
+                </div>
+                <p class="dev-stub-desc">
+                  Тут ви зможете обмінювати зароблені WinCoins на брендований мерч інституту, сертифікати та спеціальні привілеї. Каталог нагород формується!
+                </p>
+                <button type="button" class="dev-stub-btn back-btn">
+                  <span>Повернутися на головну</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Support Sub-Screen -->
+        <div id="support-screen" class="app-screen sub-screen">
+          <div class="screen-navbar">
+            <button class="back-btn">&lsaquo;</button>
+            <h2 class="navbar-title">Підтримка</h2>
+            <div class="placeholder-nav-btn"></div>
+          </div>
+          <div class="screen-content scrollable">
+            <div class="dev-stub-container">
+              <div class="dev-stub-card">
+                <div class="dev-stub-icon-circle">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                </div>
+                <h3 class="dev-stub-title">Розділ у розробці</h3>
+                <div class="dev-stub-badge">
+                  <span>💬 Допомога та питання</span>
+                </div>
+                <p class="dev-stub-desc">
+                  Служба підтримки та інтерактивний асистент Winogradsky проходять планове технічне оновлення.
+                </p>
+                <button type="button" class="dev-stub-btn back-btn">
+                  <span>Повернутися на головну</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- News Tab Sub-Screen (All News) -->
+        <div id="news-tab-screen" class="app-screen sub-screen">
+          <div class="screen-navbar">
+            <button class="back-btn">&lsaquo;</button>
+            <h2 class="navbar-title">Новини</h2>
+            <div class="placeholder-nav-btn"></div>
+          </div>
+          <div class="screen-content scrollable" id="all-news-container">
+            <!-- Dynamically populated or copied list of news from dashboard -->
+          </div>
+        </div>
+
+        <!-- News Details Overlay Modal -->
+        <div id="news-details-modal" class="modal-overlay">
+          <div class="modal-card">
+            <button class="modal-close-btn">&times;</button>
+            <div class="modal-content scrollable" id="news-modal-body">
+              <!-- Dynamically inserted article content -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile / Wallet Overlay Modal -->
+        <div id="profile-modal" class="modal-overlay">
+          <div class="modal-card">
+            <button class="modal-close-btn">&times;</button>
+            <div class="modal-content scrollable">
+              <div class="profile-details-view">
+                <div class="profile-avatar-large">
+                  <div class="avatar-img-placeholder-large" id="profile-avatar-img">
+                    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </div>
+                  <div class="avatar-upload-icon">&#128247;</div>
+                </div>
+                <h3 id="profile-name">Віталій Шевченко</h3>
+                <p class="profile-email">v.shevchenko@winogradsky.edu.ua</p>
+                
+                <div class="profile-stat-box">
+                  <div class="stat-item">
+                    <span class="stat-value" id="profile-coin-count">0</span>
+                    <span class="stat-label">WinCoins</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-value" id="profile-courses-count">0</span>
+                    <span class="stat-label">Курси</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-value" id="profile-events-count">0</span>
+                    <span class="stat-label">Події</span>
+                  </div>
+                </div>
+
+                <button class="logout-btn" id="logout-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="logout-icon">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                  </svg>
+                  <span>Вийти з акаунту</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fullscreen Photo Preview Modal -->
+        <div id="fullscreen-photo-modal" class="modal-overlay">
+          <div class="fullscreen-photo-card">
+            <button class="modal-close-btn" id="close-fullscreen-photo-btn">&times;</button>
+            <div class="fullscreen-photo-container">
+              <img id="fullscreen-merged-img" alt="Повнорозмірне суміщене фото">
+            </div>
+          </div>
+        </div>
+
+        <!-- Hidden canvas for image merging -->
+        <canvas id="hidden-merge-canvas" style="display: none;"></canvas>
+
+        <!-- Coin Shower Animation Overlay -->
+        <div id="coin-shower-overlay" class="coin-shower-overlay"></div>
+
+        <!-- Bottom Navigation Bar (5 tabs) -->
+        <nav class="app-nav-bar">
+          <!-- Головна (Active) -->
+          <button class="nav-tab active" data-screen="home-screen">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"></path>
+            </svg>
+            <span class="nav-label">Головна</span>
+          </button>
+          
+          <!-- Квести -->
+          <button class="nav-tab" data-screen="quests-screen">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="6"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+            <span class="nav-label">Квести</span>
+          </button>
+          
+          <!-- Винагороди -->
+          <button class="nav-tab" data-screen="community-screen">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="8" r="6"></circle>
+              <path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path>
+            </svg>
+            <span class="nav-label">Винагороди</span>
+          </button>
+          
+          <!-- Новини -->
+          <button class="nav-tab" data-screen="news-tab-screen">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span class="nav-label">Новини</span>
+          </button>
+          
+          <!-- Більше (Opens support or events) -->
+          <button class="nav-tab" data-screen="support-screen">
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="9"></circle>
+              <line x1="12" y1="12" x2="12" y2="16"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span class="nav-label">Більше</span>
+          </button>
+        </nav>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS for Map Quest -->
+  <script src="lib/leaflet.js"></script>
+  <script src="lib/leaflet-routing-machine.js"></script>
+  <!-- jsQR for QR Code Detection in Quest Point 3 -->
+  <script src="jsQR.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

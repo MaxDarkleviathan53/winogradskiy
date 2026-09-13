@@ -1,0 +1,324 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		110001012600000100000001 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110000012600000100000001 /* AppDelegate.swift */; };
+		110001022600000100000001 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110000022600000100000001 /* SceneDelegate.swift */; };
+		110001032600000100000001 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110000032600000100000001 /* ViewController.swift */; };
+		110001042600000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 110000042600000100000001 /* Assets.xcassets */; };
+		110001052600000100000001 /* www in Resources */ = {isa = PBXBuildFile; fileRef = 110000052600000100000001 /* www */; };
+		110001062600000100000001 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 110000062600000100000001 /* WebKit.framework */; };
+		110001072600000100000001 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 110000072600000100000001 /* CoreLocation.framework */; };
+		110001082600000100000001 /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 110000082600000100000001 /* LocalAuthentication.framework */; };
+		110001092600000100000001 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 110000092600000100000001 /* Photos.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		110000002600000100000001 /* WinogradskyApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WinogradskyApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		110000012600000100000001 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		110000022600000100000001 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		110000032600000100000001 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		110000042600000100000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		110000052600000100000001 /* www */ = {isa = PBXFileReference; lastKnownFileType = folder; path = www; sourceTree = "<group>"; };
+		110000062600000100000001 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		110000072600000100000001 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
+		110000082600000100000001 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
+		110000092600000100000001 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
+		110000102600000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		110002012600000100000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				110001062600000100000001 /* WebKit.framework in Frameworks */,
+				110001072600000100000001 /* CoreLocation.framework in Frameworks */,
+				110001082600000100000001 /* LocalAuthentication.framework in Frameworks */,
+				110001092600000100000001 /* Photos.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		110003012600000100000001 = {
+			isa = PBXGroup;
+			children = (
+				110003022600000100000001 /* WinogradskyApp */,
+				110003052600000100000001 /* Frameworks */,
+				110003062600000100000001 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		110003022600000100000001 /* WinogradskyApp */ = {
+			isa = PBXGroup;
+			children = (
+				110003032600000100000001 /* App */,
+				110003042600000100000001 /* Resources */,
+				110000042600000100000001 /* Assets.xcassets */,
+				110000052600000100000001 /* www */,
+			);
+			path = WinogradskyApp;
+			sourceTree = "<group>";
+		};
+		110003032600000100000001 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				110000012600000100000001 /* AppDelegate.swift */,
+				110000022600000100000001 /* SceneDelegate.swift */,
+				110000032600000100000001 /* ViewController.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		110003042600000100000001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				110000102600000100000001 /* Info.plist */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		110003052600000100000001 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				110000062600000100000001 /* WebKit.framework */,
+				110000072600000100000001 /* CoreLocation.framework */,
+				110000082600000100000001 /* LocalAuthentication.framework */,
+				110000092600000100000001 /* Photos.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		110003062600000100000001 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				110000002600000100000001 /* WinogradskyApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		110004012600000100000001 /* WinogradskyApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 110005012600000100000001 /* Build configuration list for PBXNativeTarget "WinogradskyApp" */;
+			buildPhases = (
+				110002022600000100000001 /* Sources */,
+				110002012600000100000001 /* Frameworks */,
+				110002032600000100000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WinogradskyApp;
+			productName = WinogradskyApp;
+			productReference = 110000002600000100000001 /* WinogradskyApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		110000002600000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1400;
+				LastUpgradeCheck = 1400;
+				TargetAttributes = {
+					110004012600000100000001 = {
+						CreatedOnToolsVersion = 14.0;
+					};
+				};
+			};
+			buildConfigurationList = 110005022600000100000001 /* Build configuration list for PBXProject "WinogradskyApp" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = uk;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				uk,
+				Base,
+			);
+			mainGroup = 110003012600000100000001;
+			productRefGroup = 110003062600000100000001 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				110004012600000100000001 /* WinogradskyApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		110002032600000100000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				110001042600000100000001 /* Assets.xcassets in Resources */,
+				110001052600000100000001 /* www in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		110002022600000100000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				110001012600000100000001 /* AppDelegate.swift in Sources */,
+				110001022600000100000001 /* SceneDelegate.swift in Sources */,
+				110001032600000100000001 /* ViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		110006012600000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDEFINED_VARIABLES = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		110006022600000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDEFINED_VARIABLES = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		110006032600000100000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WinogradskyApp/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.winogradsky.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		110006042600000100000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = WinogradskyApp/Resources/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.winogradsky.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		110005012600000100000001 /* Build configuration list for PBXNativeTarget "WinogradskyApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				110006032600000100000001 /* Debug */,
+				110006042600000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		110005022600000100000001 /* Build configuration list for PBXProject "WinogradskyApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				110006012600000100000001 /* Debug */,
+				110006022600000100000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 110000002600000000000001 /* Project object */;
+}

@@ -1,0 +1,49 @@
+name: Build iOS App (.ipa)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build-ios:
+    name: Build iOS IPA
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Select latest Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode.app
+          xcodebuild -version
+
+      - name: Build Xcode Project
+        run: |
+          cd ios
+          xcodebuild -project WinogradskyApp.xcodeproj \
+            -scheme WinogradskyApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            clean build
+
+      - name: Package .app into .ipa
+        run: |
+          mkdir -p Payload
+          cp -r ios/build/Build/Products/Release-iphoneos/WinogradskyApp.app Payload/
+          zip -r WinogradskyApp.ipa Payload
+          ls -lh WinogradskyApp.ipa
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WinogradskyApp-iOS-Build
+          path: WinogradskyApp.ipa
+          retention-days: 14

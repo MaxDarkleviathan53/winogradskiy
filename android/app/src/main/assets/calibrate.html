@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  body { background: #1a1a1a; color: #eee; font-family: sans-serif; padding: 20px; }
+  .grid { display: flex; flex-wrap: wrap; gap: 20px; }
+  .test-card { background: #2a2a2a; padding: 10px; border-radius: 8px; }
+  .split-box {
+    width: 320px;
+    height: 240px;
+    display: flex;
+    border: 2px solid #1e3d2f;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    background: #000;
+  }
+  .left-half {
+    width: 50%;
+    height: 100%;
+    background: #442222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #aaa;
+    border-right: 1px solid white;
+  }
+  .right-half {
+    width: 50%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: #111;
+  }
+  .right-half img {
+    height: 100%;
+    width: auto;
+    position: absolute;
+    top: 0;
+  }
+</style>
+</head>
+<body>
+  <h2>Tower Center Calibration</h2>
+  <div class="grid">
+    <!-- Test with left offset so the tower center is at the split line -->
+    <div class="test-card">
+      <h4>Offset: -80px (Tower Center)</h4>
+      <div class="split-box">
+        <div class="left-half">Camera Feed (Left Half)</div>
+        <div class="right-half">
+          <img src="assets/fire_station_vintage.jpg" style="left: -40px;">
+        </div>
+      </div>
+    </div>
+    <div class="test-card">
+      <h4>Offset: -60px</h4>
+      <div class="split-box">
+        <div class="left-half">Camera Feed (Left Half)</div>
+        <div class="right-half">
+          <img src="assets/fire_station_vintage.jpg" style="left: -60px;">
+        </div>
+      </div>
+    </div>
+    <div class="test-card">
+      <h4>Offset: -80px</h4>
+      <div class="split-box">
+        <div class="left-half">Camera Feed (Left Half)</div>
+        <div class="right-half">
+          <img src="assets/fire_station_vintage.jpg" style="left: -80px;">
+        </div>
+      </div>
+    </div>
+    <div class="test-card">
+      <h4>Offset: -100px</h4>
+      <div class="split-box">
+        <div class="left-half">Camera Feed (Left Half)</div>
+        <div class="right-half">
+          <img src="assets/fire_station_vintage.jpg" style="left: -100px;">
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
