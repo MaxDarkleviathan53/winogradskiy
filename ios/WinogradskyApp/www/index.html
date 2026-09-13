@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Winogradsky Institute</title>
   <!-- Google Fonts for Modern Typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,6 +12,16 @@
   <!-- Leaflet CSS for Map Quest -->
   <link rel="stylesheet" href="lib/leaflet.css" />
   <link rel="stylesheet" href="lib/leaflet-routing-machine.css" />
+  <script>
+    (function() {
+      var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || 
+                  Boolean(window.webkit && window.webkit.messageHandlers);
+      if (isIOS) {
+        document.documentElement.classList.add('is-ios');
+      }
+    })();
+  </script>
 </head>
 <body>
   <!-- Offline Connection Status Pill / Banner -->

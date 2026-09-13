@@ -17,7 +17,11 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
     }
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
+        if #available(iOS 13.0, *) {
+            return .darkContent
+        } else {
+            return .default
+        }
     }
 
     // MARK: - Location Setup
@@ -41,6 +45,10 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
         // Inject compatibility script for AndroidGallery & AndroidBiometrics
         let bridgeScriptSource = """
         (function() {
+            try {
+                document.documentElement.classList.add('is-ios');
+            } catch(e) {}
+
             window.AndroidGallery = {
                 saveImageToGallery: function(base64Data, filename) {
                     try {
@@ -87,13 +95,15 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
         config.setValue(true, forKey: "allowUniversalAccessFromFileURLs")
         config.preferences.setValue(true, forKey: "allowFileAccessFromFileURLs")
 
+        view.backgroundColor = UIColor(red: 0.965, green: 0.973, blue: 0.961, alpha: 1.0)
+
         webView = WKWebView(frame: view.bounds, configuration: config)
         webView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         webView.navigationDelegate = self
         webView.uiDelegate = self
         webView.scrollView.bounces = false
         webView.scrollView.contentInsetAdjustmentBehavior = .never
-        webView.backgroundColor = UIColor(red: 0.10, green: 0.20, blue: 0.15, alpha: 1.0)
+        webView.backgroundColor = UIColor(red: 0.965, green: 0.973, blue: 0.961, alpha: 1.0)
         webView.isOpaque = false
 
         view.addSubview(webView)

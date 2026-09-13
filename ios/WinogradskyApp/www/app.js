@@ -3,6 +3,10 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) || window.webkit?.messageHandlers) {
+    document.documentElement.classList.add('is-ios');
+  }
+
   const API_URL = 'http://94.247.230.221:5000/api';
   
   // --- STATE ---
