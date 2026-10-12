@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
             controller.setAppearanceLightNavigationBars(true);
         }
 
+        myWebView = findViewById(R.id.webview);
+
         View mainView = findViewById(R.id.main_layout);
         if (mainView != null) {
             ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, windowInsets) -> {
@@ -58,9 +60,8 @@ public class MainActivity extends AppCompatActivity {
                 v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
                 return windowInsets;
             });
+            ViewCompat.requestApplyInsets(mainView);
         }
-
-        myWebView = findViewById(R.id.webview);
         
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
