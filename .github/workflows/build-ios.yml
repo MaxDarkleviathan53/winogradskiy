@@ -91,6 +91,29 @@ jobs:
           # Verify embedded.mobileprovision is present
           unzip -p ../WinogradskyApp.ipa "Payload/*.app/embedded.mobileprovision" | head -c 50 && echo "✅ embedded.mobileprovision OK" || echo "❌ embedded.mobileprovision MISSING"
 
+      - name: Upload to App Store Connect (TestFlight)
+        if: env.BUILD_CERTIFICATE_BASE64 != '' && env.APP_STORE_API_KEY_BASE64 != ''
+        env:
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+          APP_STORE_API_KEY_BASE64: ${{ secrets.APP_STORE_API_KEY_BASE64 }}
+          APP_STORE_API_ISSUER_ID: ${{ secrets.APP_STORE_API_ISSUER_ID }}
+        run: |
+          # Decode API key to temp file
+          API_KEY_PATH=$RUNNER_TEMP/AuthKey_Z896TY537L.p8
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_API_KEY_BASE64" | base64 --decode -o $API_KEY_PATH
+          cp $API_KEY_PATH ~/.appstoreconnect/private_keys/AuthKey_Z896TY537L.p8
+
+          echo "=== Uploading to App Store Connect ==="
+          xcrun altool --upload-app \
+            -f WinogradskyApp.ipa \
+            -t ios \
+            --apiKey Z896TY537L \
+            --apiIssuer "$APP_STORE_API_ISSUER_ID" \
+            --verbose
+
+          echo "✅ Upload to TestFlight completed!"
+
       - name: Fallback Ad-hoc Build (if no certificate secrets)
         if: env.BUILD_CERTIFICATE_BASE64 == ''
         env:
