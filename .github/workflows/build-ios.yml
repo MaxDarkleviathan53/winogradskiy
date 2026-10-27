@@ -67,6 +67,7 @@ jobs:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
         run: |
           cd ios
+          set -o pipefail
           xcodebuild -project WinogradskyApp.xcodeproj \
             -scheme WinogradskyApp \
             -configuration Release \
@@ -77,19 +78,29 @@ jobs:
             CODE_SIGN_IDENTITY="Apple Distribution" \
             PROVISIONING_PROFILE="d95a8369-4747-4848-bdd2-e9435ceb2500" \
             PROVISIONING_PROFILE_SPECIFIER="d95a8369-4747-4848-bdd2-e9435ceb2500" \
-            archive
+            archive 2>&1 | tee ../xcodebuild-archive.log
 
           xcodebuild -exportArchive \
             -archivePath build/WinogradskyApp.xcarchive \
             -exportOptionsPlist ExportOptions.plist \
             -exportPath build/ipa \
-            -allowProvisioningUpdates
+            -allowProvisioningUpdates 2>&1 | tee -a ../xcodebuild-archive.log
 
           cp build/ipa/*.ipa ../WinogradskyApp.ipa
           echo "=== IPA size ==="
           ls -lh ../WinogradskyApp.ipa
           # Verify embedded.mobileprovision is present
           unzip -p ../WinogradskyApp.ipa "Payload/*.app/embedded.mobileprovision" | head -c 50 && echo "✅ embedded.mobileprovision OK" || echo "❌ embedded.mobileprovision MISSING"
+
+      - name: Report Build Error on Failure
+        if: failure()
+        run: |
+          if [ -f xcodebuild-archive.log ]; then
+            echo "### ❌ Xcode Build Error Summary" >> $GITHUB_STEP_SUMMARY
+            echo '```text' >> $GITHUB_STEP_SUMMARY
+            grep -E "(error:|fatal error:|BUILD FAILED|\*\* ARCHIVE FAILED \*\*)" xcodebuild-archive.log | tail -n 25 >> $GITHUB_STEP_SUMMARY || tail -n 30 xcodebuild-archive.log >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Upload to App Store Connect (TestFlight)
         if: env.BUILD_CERTIFICATE_BASE64 != '' && env.APP_STORE_API_KEY_BASE64 != ''
