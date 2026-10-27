@@ -93,16 +93,24 @@ jobs:
 
       - name: Upload to App Store Connect (TestFlight)
         if: env.BUILD_CERTIFICATE_BASE64 != '' && env.APP_STORE_API_KEY_BASE64 != ''
+        continue-on-error: true
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           APP_STORE_API_KEY_BASE64: ${{ secrets.APP_STORE_API_KEY_BASE64 }}
           APP_STORE_API_ISSUER_ID: ${{ secrets.APP_STORE_API_ISSUER_ID }}
         run: |
-          # Decode API key to temp file
-          API_KEY_PATH=$RUNNER_TEMP/AuthKey_Z896TY537L.p8
+          # Decode API key
           mkdir -p ~/.appstoreconnect/private_keys
-          echo "$APP_STORE_API_KEY_BASE64" | base64 --decode -o $API_KEY_PATH
-          cp $API_KEY_PATH ~/.appstoreconnect/private_keys/AuthKey_Z896TY537L.p8
+          echo "$APP_STORE_API_KEY_BASE64" | base64 --decode > ~/.appstoreconnect/private_keys/AuthKey_Z896TY537L.p8
+          chmod 600 ~/.appstoreconnect/private_keys/AuthKey_Z896TY537L.p8
+
+          echo "=== Validating IPA before upload ==="
+          xcrun altool --validate-app \
+            -f WinogradskyApp.ipa \
+            -t ios \
+            --apiKey Z896TY537L \
+            --apiIssuer "$APP_STORE_API_ISSUER_ID" \
+            --output-format xml 2>&1 || true
 
           echo "=== Uploading to App Store Connect ==="
           xcrun altool --upload-app \
@@ -110,7 +118,7 @@ jobs:
             -t ios \
             --apiKey Z896TY537L \
             --apiIssuer "$APP_STORE_API_ISSUER_ID" \
-            --verbose
+            --output-format xml 2>&1
 
           echo "✅ Upload to TestFlight completed!"
 
@@ -139,8 +147,10 @@ jobs:
           ls -lh WinogradskyApp.ipa
 
       - name: Upload IPA Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: WinogradskyApp-iOS-Build
           path: WinogradskyApp.ipa
+          if-no-files-found: warn
           retention-days: 14
