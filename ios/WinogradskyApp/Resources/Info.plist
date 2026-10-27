@@ -22,6 +22,8 @@
 	<string>6</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Додаток використовує камеру для сканування QR-кодів та розпізнавання афіш у квесті</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
