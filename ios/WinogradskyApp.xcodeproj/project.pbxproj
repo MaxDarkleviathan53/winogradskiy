@@ -12,6 +12,7 @@
 		110001032600000100000001 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 110000032600000100000001 /* ViewController.swift */; };
 		110001042600000100000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 110000042600000100000001 /* Assets.xcassets */; };
 		110001052600000100000001 /* www in Resources */ = {isa = PBXBuildFile; fileRef = 110000052600000100000001 /* www */; };
+		110001112600000100000001 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 110000112600000100000001 /* LaunchScreen.storyboard */; };
 		110001062600000100000001 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 110000062600000100000001 /* WebKit.framework */; };
 		110001072600000100000001 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 110000072600000100000001 /* CoreLocation.framework */; };
 		110001082600000100000001 /* LocalAuthentication.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 110000082600000100000001 /* LocalAuthentication.framework */; };
@@ -30,6 +31,7 @@
 		110000082600000100000001 /* LocalAuthentication.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = LocalAuthentication.framework; path = System/Library/Frameworks/LocalAuthentication.framework; sourceTree = SDKROOT; };
 		110000092600000100000001 /* Photos.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Photos.framework; path = System/Library/Frameworks/Photos.framework; sourceTree = SDKROOT; };
 		110000102600000100000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		110000112600000100000001 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 			isa = PBXGroup;
 			children = (
 				110000102600000100000001 /* Info.plist */,
+				110000112600000100000001 /* LaunchScreen.storyboard */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -164,6 +167,7 @@
 			files = (
 				110001042600000100000001 /* Assets.xcassets in Resources */,
 				110001052600000100000001 /* www in Resources */,
+				110001112600000100000001 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -257,7 +261,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 97YA9Z6UW5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -281,7 +285,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 97YA9Z6UW5;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
