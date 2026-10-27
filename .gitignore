@@ -6,10 +6,16 @@ android/app/build/
 *.apk
 *.aab
 
-# iOS build outputs
+# iOS build outputs & certificates
 ios/build/
 Payload/
 *.ipa
+iossert/
+*.p12
+*.key
+*.cer
+*.p8
+*.mobileprovision
 
 # Node & database
 server/node_modules/
