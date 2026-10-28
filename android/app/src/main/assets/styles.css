@@ -1556,6 +1556,141 @@ body {
   stroke: #dc2626;
 }
 
+/* Delete Account Button in Profile Modal */
+.delete-account-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px dashed #fca5a5;
+  background-color: #fff5f5;
+  color: #b91c1c;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-main);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+
+.delete-account-btn:hover {
+  background-color: #fee2e2;
+  border-color: #ef4444;
+  color: #991b1b;
+}
+
+.delete-account-btn:active {
+  transform: scale(0.98);
+}
+
+.delete-icon {
+  stroke: #dc2626;
+}
+
+/* Delete Account Modal Styles */
+.delete-modal-card {
+  max-width: 360px;
+  text-align: center;
+  padding: 24px 20px 20px;
+  border-radius: var(--border-radius-lg, 16px);
+}
+
+.delete-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.delete-modal-icon-wrapper {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #fee2e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.delete-modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.delete-modal-warning {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.45;
+  margin-bottom: 8px;
+}
+
+.delete-modal-subwarning {
+  font-size: 12.5px;
+  color: #6b7280;
+  line-height: 1.45;
+  margin-bottom: 20px;
+  background: #f9fafb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.delete-modal-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.btn-cancel-delete {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #374151;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.btn-cancel-delete:hover {
+  background-color: #f3f4f6;
+}
+
+.btn-confirm-delete {
+  flex: 1.2;
+  padding: 12px;
+  border: none;
+  background-color: #dc2626;
+  color: #ffffff;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-main);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.25);
+  transition: var(--transition-smooth);
+}
+
+.btn-confirm-delete:hover {
+  background-color: #b91c1c;
+}
+
+.btn-confirm-delete:active {
+  transform: scale(0.98);
+}
+
 /* App Brand Logo Image */
 .brand-logo-img {
   max-width: 250px;

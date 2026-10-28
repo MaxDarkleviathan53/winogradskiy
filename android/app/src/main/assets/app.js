@@ -84,6 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const registerErrorMsg = document.getElementById('register-error-msg');
   
   const logoutBtn = document.getElementById('logout-btn');
+  const deleteAccountBtn = document.getElementById('delete-account-btn');
+  const deleteAccountModal = document.getElementById('delete-account-modal');
+  const closeDeleteModalBtn = document.getElementById('close-delete-modal-btn');
+  const cancelDeleteAccountBtn = document.getElementById('cancel-delete-account-btn');
+  const confirmDeleteAccountBtn = document.getElementById('confirm-delete-account-btn');
   
   // Profile UI text fields
   const profileNameTxt = document.getElementById('profile-name');
@@ -786,6 +791,73 @@ document.addEventListener('DOMContentLoaded', () => {
       profileModal.classList.remove('active');
       showAuthScreen();
     });
+  }
+
+  if (deleteAccountBtn && deleteAccountModal) {
+    deleteAccountBtn.addEventListener('click', () => {
+      deleteAccountModal.classList.add('active');
+    });
+
+    const hideDeleteModal = () => {
+      deleteAccountModal.classList.remove('active');
+    };
+
+    if (closeDeleteModalBtn) closeDeleteModalBtn.addEventListener('click', hideDeleteModal);
+    if (cancelDeleteAccountBtn) cancelDeleteAccountBtn.addEventListener('click', hideDeleteModal);
+
+    deleteAccountModal.addEventListener('click', (e) => {
+      if (e.target === deleteAccountModal) {
+        hideDeleteModal();
+      }
+    });
+
+    if (confirmDeleteAccountBtn) {
+      confirmDeleteAccountBtn.addEventListener('click', async () => {
+        setLoading(confirmDeleteAccountBtn, true);
+        try {
+          let response = await fetch(`${API_URL}/account`, {
+            method: 'DELETE',
+            headers: getAuthHeaders()
+          });
+
+          // Fallback if DELETE method returned 404 or 405
+          if (response.status === 404 || response.status === 405) {
+            response = await fetch(`${API_URL}/account/delete`, {
+              method: 'POST',
+              headers: getAuthHeaders()
+            });
+          }
+
+          if (response.ok) {
+            // Clear all user credentials and cached data
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('cached_profile_name');
+            localStorage.removeItem('cached_profile_email');
+            localStorage.removeItem('cached_profile_coins');
+
+            // Reset profile state to defaults
+            state.profile.name = 'Віталій Шевченко';
+            state.profile.email = 'v.shevchenko@winogradsky.edu.ua';
+            state.coins = 0;
+            updateProfileUI();
+
+            hideDeleteModal();
+            if (profileModal) profileModal.classList.remove('active');
+            showAuthScreen();
+            alert('Ваш акаунт та всі пов\'язані дані успішно видалено з бази даних.');
+          } else {
+            let data = {};
+            try { data = await response.json(); } catch (_) {}
+            alert(data.error || data.message || 'Не вдалося видалити акаунт. Спробуйте пізніше.');
+          }
+        } catch (err) {
+          console.error('Account deletion network error:', err);
+          alert('Помилка мережі при спробі видалити акаунт. Перевірте з\'єднання з інтернетом.');
+        } finally {
+          setLoading(confirmDeleteAccountBtn, false);
+        }
+      });
+    }
   }
 
   // Helper to show/hide loading spinners on submit buttons

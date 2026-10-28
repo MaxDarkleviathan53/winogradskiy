@@ -231,6 +231,42 @@ app.get('/api/profile', authenticateToken, (req, res) => {
   });
 });
 
+// 3.1. Delete Authenticated User Account and all associated data
+function handleDeleteUserAccount(req, res) {
+  const userId = req.user.id;
+
+  db.serialize(() => {
+    // 1. Delete user transactions
+    db.run('DELETE FROM transactions WHERE user_id = ?', [userId], (tErr) => {
+      if (tErr) console.error('Error deleting transactions for user', userId, tErr.message);
+    });
+
+    // 2. Delete user completed quests
+    db.run('DELETE FROM user_quests WHERE user_id = ?', [userId], (qErr) => {
+      if (qErr) console.error('Error deleting user_quests for user', userId, qErr.message);
+    });
+
+    // 3. Delete user record
+    db.run('DELETE FROM users WHERE id = ?', [userId], function (uErr) {
+      if (uErr) {
+        return res.status(500).json({ error: 'Помилка бази даних при видаленні акаунту' });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ error: 'Користувача не знайдено' });
+      }
+      console.log(`User account #${userId} and all associated data permanently deleted.`);
+      res.json({
+        message: 'Акаунт та всі пов\'язані дані успішно видалено з бази даних',
+        deleted_user_id: userId
+      });
+    });
+  });
+}
+
+app.delete('/api/account', authenticateToken, handleDeleteUserAccount);
+app.post('/api/account/delete', authenticateToken, handleDeleteUserAccount);
+app.delete('/api/profile', authenticateToken, handleDeleteUserAccount);
+
 // 4. Synchronize/Update Coin Balance
 app.post('/api/sync_coins', authenticateToken, (req, res) => {
   const { coins } = req.body;
