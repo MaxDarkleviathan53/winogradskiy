@@ -5509,6 +5509,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Recalculate Leaflet map dimensions on device rotation / viewport resize (iPad portrait <-> landscape)
+  function refreshAllLeafletMaps() {
+    setTimeout(() => {
+      if (leafletMap) leafletMap.invalidateSize();
+      if (leafletMap2) leafletMap2.invalidateSize();
+      if (leafletMap3) leafletMap3.invalidateSize();
+      if (leafletMap4) leafletMap4.invalidateSize();
+      if (leafletMap5) leafletMap5.invalidateSize();
+      if (leafletMap6) leafletMap6.invalidateSize();
+      if (leafletMap7) leafletMap7.invalidateSize();
+      if (leafletMap8) leafletMap8.invalidateSize();
+    }, 200);
+  }
+  window.addEventListener('resize', refreshAllLeafletMaps);
+  window.addEventListener('orientationchange', refreshAllLeafletMaps);
+
   // Load saved quest progress on boot
   loadQuestProgress();
 
