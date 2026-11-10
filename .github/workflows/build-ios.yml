@@ -129,40 +129,7 @@ jobs:
             -t ios \
             --apiKey Z896TY537L \
             --apiIssuer "$APP_STORE_API_ISSUER_ID" \
-            --output-format xml 2>&1 | tee upload_result.xml || true
-
-          if grep -qE "(Redundant Binary Upload|must be higher than the previously uploaded version|already uploaded a build)" upload_result.xml; then
-            echo "⚠️ Build 7 already exists in App Store Connect. Auto-incrementing build number to 8 and re-uploading..."
-            NEXT_BUILD=8
-            /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $NEXT_BUILD" ios/WinogradskyApp/Resources/Info.plist
-            sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $NEXT_BUILD;/g" ios/WinogradskyApp.xcodeproj/project.pbxproj
-            cd ios
-            rm -rf build
-            xcodebuild -project WinogradskyApp.xcodeproj \
-              -scheme WinogradskyApp \
-              -configuration Release \
-              -destination 'generic/platform=iOS' \
-              -archivePath build/WinogradskyApp.xcarchive \
-              CODE_SIGN_STYLE=Manual \
-              DEVELOPMENT_TEAM=97YA9Z6UW5 \
-              CODE_SIGN_IDENTITY="Apple Distribution" \
-              PROVISIONING_PROFILE="d95a8369-4747-4848-bdd2-e9435ceb2500" \
-              PROVISIONING_PROFILE_SPECIFIER="d95a8369-4747-4848-bdd2-e9435ceb2500" \
-              archive
-            xcodebuild -exportArchive \
-              -archivePath build/WinogradskyApp.xcarchive \
-              -exportOptionsPlist ExportOptions.plist \
-              -exportPath build/ipa \
-              -allowProvisioningUpdates
-            cp build/ipa/*.ipa ../WinogradskyApp.ipa
-            cd ..
-            xcrun altool --upload-app \
-              -f WinogradskyApp.ipa \
-              -t ios \
-              --apiKey Z896TY537L \
-              --apiIssuer "$APP_STORE_API_ISSUER_ID" \
-              --output-format xml 2>&1
-          fi
+            --output-format xml 2>&1
 
           echo "✅ Upload to TestFlight completed!"
 
