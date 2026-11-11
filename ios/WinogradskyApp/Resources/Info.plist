@@ -19,7 +19,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.0.3</string>
 	<key>CFBundleVersion</key>
-	<string>8</string>
+	<string>9</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -27,7 +27,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Додаток використовує камеру для сканування QR-кодів та розпізнавання афіш у квесті</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Додаток використовує геолокацію для навігації маршрутами квесту</string>
+	<string>Застосунок «Інститут Виноградського» використовує вашу геолокацію для навігації інтерактивними маршрутами та проходження освітніх квестів. Доступ до місцезнаходження дає змогу визначати вашу поточну позицію на карті, прокладати маршрут до історичних локацій і допомагати вам дістатися наступної точки квесту.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Застосунок «Інститут Виноградського» використовує вашу геолокацію для навігації інтерактивними маршрутами та проходження освітніх квестів. Доступ до місцезнаходження дає змогу визначати вашу поточну позицію на карті, прокладати маршрут до історичних локацій і допомагати вам дістатися наступної точки квесту.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Додаток зберігає пам'ятні афіші в галерею фотографій</string>
 	<key>NSPhotoLibraryUsageDescription</key>

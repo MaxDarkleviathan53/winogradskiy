@@ -8,6 +8,8 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
 
     private var webView: WKWebView!
     private var locationManager: CLLocationManager?
+    private var locationRequestedByJS = false
+    private var latestHeading: Double = -1.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,7 +48,7 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
         locationManager = CLLocationManager()
         locationManager?.delegate = self
         locationManager?.desiredAccuracy = kCLLocationAccuracyBest
-        locationManager?.requestWhenInUseAuthorization()
+        locationManager?.distanceFilter = 2.0
     }
 
     // MARK: - WebView Setup
@@ -57,13 +59,108 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
         // Bridge handlers
         contentController.add(self, name: "saveImageToGallery")
         contentController.add(self, name: "authenticateBiometrics")
+        contentController.add(self, name: "nativeLocation")
 
-        // Inject compatibility script for AndroidGallery & AndroidBiometrics
+        // Inject compatibility script for AndroidGallery, AndroidBiometrics & Native Geolocation
         let bridgeScriptSource = """
         (function() {
             try {
                 document.documentElement.classList.add('is-ios');
             } catch(e) {}
+
+            var watchCallbacks = {};
+            var oneShotCallbacks = [];
+            var nextWatchId = 1;
+            var lastKnownPosition = null;
+
+            window.__onNativeLocationUpdate = function(lat, lng, accuracy, heading) {
+                var pos = {
+                    coords: {
+                        latitude: lat,
+                        longitude: lng,
+                        accuracy: accuracy || 10,
+                        altitude: null,
+                        altitudeAccuracy: null,
+                        heading: (typeof heading === 'number' && heading >= 0) ? heading : null,
+                        speed: null
+                    },
+                    timestamp: Date.now()
+                };
+                lastKnownPosition = pos;
+
+                while (oneShotCallbacks.length > 0) {
+                    var cb = oneShotCallbacks.shift();
+                    try { if (cb && typeof cb.success === 'function') cb.success(pos); } catch (e) {}
+                }
+
+                Object.keys(watchCallbacks).forEach(function(id) {
+                    var w = watchCallbacks[id];
+                    try { if (w && typeof w.success === 'function') w.success(pos); } catch (e) {}
+                });
+            };
+
+            window.__onNativeLocationError = function(code, message) {
+                var err = { code: code || 1, message: message || 'Location permission denied' };
+                while (oneShotCallbacks.length > 0) {
+                    var cb = oneShotCallbacks.shift();
+                    try { if (cb && typeof cb.error === 'function') cb.error(err); } catch (e) {}
+                }
+                Object.keys(watchCallbacks).forEach(function(id) {
+                    var w = watchCallbacks[id];
+                    try { if (w && typeof w.error === 'function') w.error(err); } catch (e) {}
+                });
+            };
+
+            var nativeGeolocation = {
+                getCurrentPosition: function(success, error, options) {
+                    if (lastKnownPosition && (Date.now() - lastKnownPosition.timestamp < 15000)) {
+                        var cachedPos = lastKnownPosition;
+                        setTimeout(function() {
+                            try { if (typeof success === 'function') success(cachedPos); } catch (e) {}
+                        }, 0);
+                    } else {
+                        oneShotCallbacks.push({ success: success, error: error });
+                    }
+                    try {
+                        window.webkit.messageHandlers.nativeLocation.postMessage({ action: 'request' });
+                    } catch (e) {
+                        if (typeof error === 'function') error({ code: 2, message: 'Location bridge error' });
+                    }
+                },
+                watchPosition: function(success, error, options) {
+                    var id = nextWatchId++;
+                    watchCallbacks[id] = { success: success, error: error };
+                    if (lastKnownPosition) {
+                        var cachedPos = lastKnownPosition;
+                        setTimeout(function() {
+                            if (watchCallbacks[id] && typeof watchCallbacks[id].success === 'function') {
+                                try { watchCallbacks[id].success(cachedPos); } catch (e) {}
+                            }
+                        }, 0);
+                    }
+                    try {
+                        window.webkit.messageHandlers.nativeLocation.postMessage({ action: 'watch' });
+                    } catch (e) {}
+                    return id;
+                },
+                clearWatch: function(id) {
+                    delete watchCallbacks[id];
+                    if (Object.keys(watchCallbacks).length === 0) {
+                        try {
+                            window.webkit.messageHandlers.nativeLocation.postMessage({ action: 'stop' });
+                        } catch (e) {}
+                    }
+                }
+            };
+
+            try {
+                Object.defineProperty(navigator, 'geolocation', {
+                    get: function() { return nativeGeolocation; },
+                    configurable: true
+                });
+            } catch (e) {
+                try { navigator.geolocation = nativeGeolocation; } catch (err) {}
+            }
 
             window.AndroidGallery = {
                 saveImageToGallery: function(base64Data, filename) {
@@ -156,6 +253,114 @@ class ViewController: UIViewController, WKNavigationDelegate, WKUIDelegate, WKSc
             handleSaveImage(message.body)
         } else if message.name == "authenticateBiometrics" {
             handleBiometrics()
+        } else if message.name == "nativeLocation" {
+            handleNativeLocation(message.body)
+        }
+    }
+
+    // MARK: - Native Location Bridge (CLLocationManager)
+
+    private func currentLocationAuthStatus() -> CLAuthorizationStatus {
+        if #available(iOS 14.0, *) {
+            return locationManager?.authorizationStatus ?? .notDetermined
+        } else {
+            return CLLocationManager.authorizationStatus()
+        }
+    }
+
+    private func handleNativeLocation(_ body: Any) {
+        guard let dict = body as? [String: Any],
+              let action = dict["action"] as? String else {
+            return
+        }
+
+        if action == "stop" {
+            locationRequestedByJS = false
+            locationManager?.stopUpdatingLocation()
+            locationManager?.stopUpdatingHeading()
+            return
+        }
+
+        locationRequestedByJS = true
+        let status = currentLocationAuthStatus()
+
+        switch status {
+        case .notDetermined:
+            locationManager?.requestWhenInUseAuthorization()
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager?.startUpdatingLocation()
+            if CLLocationManager.headingAvailable() {
+                locationManager?.startUpdatingHeading()
+            }
+            if let loc = locationManager?.location {
+                sendLocationToJS(loc)
+            }
+        case .denied, .restricted:
+            DispatchQueue.main.async {
+                self.webView.evaluateJavaScript("if (window.__onNativeLocationError) { window.__onNativeLocationError(1, 'Location permission denied'); }", completionHandler: nil)
+            }
+        @unknown default:
+            break
+        }
+    }
+
+    @available(iOS 14.0, *)
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        handleAuthorizationChange(manager.authorizationStatus)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
+        handleAuthorizationChange(status)
+    }
+
+    private func handleAuthorizationChange(_ status: CLAuthorizationStatus) {
+        guard locationRequestedByJS else { return }
+        switch status {
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager?.startUpdatingLocation()
+            if CLLocationManager.headingAvailable() {
+                locationManager?.startUpdatingHeading()
+            }
+            if let loc = locationManager?.location {
+                sendLocationToJS(loc)
+            }
+        case .denied, .restricted:
+            DispatchQueue.main.async {
+                self.webView.evaluateJavaScript("if (window.__onNativeLocationError) { window.__onNativeLocationError(1, 'Location permission denied'); }", completionHandler: nil)
+            }
+        default:
+            break
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let loc = locations.last else { return }
+        sendLocationToJS(loc)
+    }
+
+    func locationManager(_ manager: CLLocationManager, didUpdateHeading newHeading: CLHeading) {
+        if newHeading.trueHeading >= 0 {
+            latestHeading = newHeading.trueHeading
+        } else if newHeading.magneticHeading >= 0 {
+            latestHeading = newHeading.magneticHeading
+        }
+    }
+
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        if let clErr = error as? CLError, clErr.code == .denied {
+            DispatchQueue.main.async {
+                self.webView.evaluateJavaScript("if (window.__onNativeLocationError) { window.__onNativeLocationError(1, 'Location permission denied'); }", completionHandler: nil)
+            }
+        }
+    }
+
+    private func sendLocationToJS(_ loc: CLLocation) {
+        let lat = loc.coordinate.latitude
+        let lng = loc.coordinate.longitude
+        let acc = max(loc.horizontalAccuracy, 5.0)
+        let heading = latestHeading >= 0 ? latestHeading : (loc.course >= 0 ? loc.course : -1.0)
+        DispatchQueue.main.async {
+            self.webView.evaluateJavaScript("if (window.__onNativeLocationUpdate) { window.__onNativeLocationUpdate(\(lat), \(lng), \(acc), \(heading)); }", completionHandler: nil)
         }
     }
 
